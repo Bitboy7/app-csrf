@@ -1,0 +1,51 @@
+<!-- templates/paciente_form.html -->
+{% extends 'base.html' %} {% block title %}Nuevo Paciente{% endblock %} 
+
+{% block content %}
+<h1 class="text-4xl font-bold text-center text-blue-600">Nuevo Paciente</h1>
+<form method="post" class="mt-8 bg-white p-6 rounded-lg shadow-lg">
+  {% csrf_token %}
+  <div class="mb-4">
+    <label for="id_nombre" class="block text-gray-700 font-bold mb-2"
+      >Nombre</label
+    >
+    <input
+      type="text"
+      name="nombre"
+      id="id_nombre"
+      class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+      placeholder="Nombre del paciente"
+      required
+    />
+  </div>
+  <div class="mb-4">
+    <label for="id_fecha_nacimiento" class="block text-gray-700 font-bold mb-2"
+      >Fecha de Nacimiento</label
+    >
+    <input
+      type="date"
+      name="fecha_nacimiento"
+      id="id_fecha_nacimiento"
+      class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+      required
+    />
+  </div>
+  <div class="mb-4">
+    <label for="id_telefono" class="block text-gray-700 font-bold mb-2"
+      >Teléfono</label
+    >
+    <input
+      type="tel"
+      name="telefono"
+      id="id_telefono"
+      class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+      placeholder="Número de teléfono"
+      pattern="[0-9]{10}"
+      required
+    />
+  </div>
+  <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">
+    Guardar
+  </button>
+</form>
+{% endblock %}
