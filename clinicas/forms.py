@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm
 from .models import Paciente, Usuario
 
 class PacienteForm(forms.ModelForm):
@@ -83,3 +83,20 @@ class RegistroForm(UserCreationForm):
         if commit:
             user.save()
         return user
+
+# Añade esta nueva clase de formulario
+class CambioPasswordForm(PasswordChangeForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['old_password'].widget.attrs.update({
+            'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline',
+            'placeholder': 'Contraseña actual'
+        })
+        self.fields['new_password1'].widget.attrs.update({
+            'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline',
+            'placeholder': 'Nueva contraseña'
+        })
+        self.fields['new_password2'].widget.attrs.update({
+            'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline',
+            'placeholder': 'Confirmar nueva contraseña'
+        })

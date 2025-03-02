@@ -26,4 +26,5 @@ urlpatterns = [
     path('login/', views.user_login, name='login'),  # Ruta para el login
     path('register/', views.user_register, name='register'),  # Ruta para el registro
     path('logout/', LogoutView.as_view(next_page='login'), name='logout'),  # Ruta para el logout
+    path('cambiar-password/', views.cambiar_password, name='cambiar_password'),  # Nueva ruta para cambiar contraseña
 ]
