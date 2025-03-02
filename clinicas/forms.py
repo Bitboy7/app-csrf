@@ -100,3 +100,37 @@ class CambioPasswordForm(PasswordChangeForm):
             'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline',
             'placeholder': 'Confirmar nueva contraseña'
         })
+        
+class PerfilForm(forms.ModelForm):
+    first_name = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline', 'placeholder': 'Nombre'})
+    )
+    last_name = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline', 'placeholder': 'Apellidos'})
+    )
+    email = forms.EmailField(
+        required=True,
+        widget=forms.EmailInput(attrs={'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline', 'placeholder': 'Correo electrónico'})
+    )
+    telefono = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline', 'placeholder': 'Teléfono'})
+    )
+    direccion = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline', 'placeholder': 'Dirección'})
+    )
+    fecha_nacimiento = forms.DateField(
+        required=False,
+        widget=forms.DateInput(attrs={'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline', 'type': 'date'})
+    )
+    foto_perfil = forms.ImageField(
+        required=False,
+        widget=forms.FileInput(attrs={'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'})
+    )
+
+    class Meta:
+        model = Usuario
+        fields = ['first_name', 'last_name', 'email', 'telefono', 'direccion', 'fecha_nacimiento', 'foto_perfil']

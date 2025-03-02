@@ -5,6 +5,7 @@ class Usuario(AbstractUser):
     telefono = models.CharField(max_length=15, blank=True)
     direccion = models.CharField(max_length=255, blank=True)
     fecha_nacimiento = models.DateField(null=True, blank=True)
+    foto_perfil = models.ImageField(upload_to='perfiles/', null=True, blank=True)
 
     # Define custom related_name attributes to avoid clashes
     groups = models.ManyToManyField(

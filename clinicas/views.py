@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
-from .forms import PacienteForm, LoginForm, RegistroForm, CambioPasswordForm
+from .forms import PacienteForm, LoginForm, RegistroForm, CambioPasswordForm, PerfilForm
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 
@@ -73,3 +73,16 @@ def cambiar_password(request):
     else:
         form = CambioPasswordForm(request.user)
     return render(request, 'cambiar_pass.html', {'form': form})
+
+@login_required
+def perfil_usuario(request):
+    if request.method == 'POST':
+        form = PerfilForm(request.POST, request.FILES, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Tu perfil ha sido actualizado correctamente.')
+            return redirect('perfil')
+    else:
+        form = PerfilForm(instance=request.user)
+    
+    return render(request, 'perfil.html', {'form': form})

@@ -18,7 +18,8 @@ from django.contrib import admin
 from django.urls import path, include
 from clinicas import views
 from django.contrib.auth.views import LogoutView
-
+from django.conf import settings
+from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index, name='index'),  # Ruta principal
@@ -27,4 +28,10 @@ urlpatterns = [
     path('register/', views.user_register, name='register'),  # Ruta para el registro
     path('logout/', LogoutView.as_view(next_page='login'), name='logout'),  # Ruta para el logout
     path('cambiar-password/', views.cambiar_password, name='cambiar_password'),  # Nueva ruta para cambiar contraseña
+    path('perfil/', views.perfil_usuario, name='perfil'),  # Nueva ruta para el perfil
+
 ]
+
+# Servir archivos media durante el desarrollo
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

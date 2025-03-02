@@ -7,37 +7,113 @@
   <title>{% block title %}Mi Aplicación{% endblock %}</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet" />
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet" />
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet" />
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .dropdown-menu {
+      display: none;
+      position: absolute;
+      right: 0;
+      background-color: #f9f9f9;
+      min-width: 160px;
+      box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+      border-radius: 4px;
+    }
+
+    .dropdown-menu.show {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .dropdown-item:hover {
+      background-color: #4299e1;
+      color: white;
+    }
+
+    .avatar-placeholder {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background-color: #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #4a5568;
+      font-size: 16px;
+    }
+
+    .avatar-img {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid white;
+    }
+  </style>
 </head>
 
 <body class="bg-gray-100">
   <nav class="bg-blue-600 p-3 mb-4 shadow-lg text-white">
     <div class="container mx-auto flex justify-between items-center">
-      <a href="" class="text-white text-2xl font-bold"><i class="fas fa-clinic-medical"></i> Clínicas</a>
-      <div>
+      <a href="{% url 'index' %}" class="text-white text-2xl font-bold"><i class="fas fa-clinic-medical"></i>
+        Clínicas</a>
+      <div class="flex items-center">
         {% if user.is_authenticated %}
-        <a href="{% url 'index' %}" class="text-white mr-4">Inicio</a>
-        <a href="{% url 'paciente_create' %}" class="text-white mr-4">Nuevo Paciente</a>
-        <a href="{% url 'cambiar_password' %}" class="text-white mr-4">Cambiar Contraseña</a>
-        <form action="{% url 'logout' %}" method="post" class="inline">
-          {% csrf_token %}
-          <button type="submit" class="text-white">Cerrar sesión</button>
-        </form>
+        <a href="{% url 'index' %}" class="text-white mr-4"><i class="fas fa-home"></i> Inicio</a>
+        <a href="{% url 'paciente_create' %}" class="text-white mr-4"><i class="fas fa-user-plus"></i> Nuevo Paciente</a>
+
+        <!-- Dropdown -->
+        <div class="relative">
+          <button id="userMenuButton" class="flex items-center focus:outline-none">
+            {% if user.foto_perfil %}
+            <img src="{{ user.foto_perfil.url }}" alt="{{ user.username }}" class="avatar-img mr-2">
+            {% else %}
+            <div class="avatar-placeholder mr-2">
+              <i class="fas fa-user"></i>
+            </div>
+            {% endif %}
+            <span>{{ user.username }}</span>
+            <svg class="ml-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd"
+                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                clip-rule="evenodd" />
+            </svg>
+          </button>
+          <div id="userMenu" class="dropdown-menu right-0 mt-2 py-2 w-48 bg-white rounded-lg shadow-xl">
+            <a href="{% url 'perfil' %}" class="block px-4 py-2 text-gray-800 hover:bg-blue-500 hover:text-white"><i class="fas fa-user-circle"></i> Mi Perfil</a>
+            <a href="{% url 'cambiar_password' %}" class="block px-4 py-2 text-gray-800 hover:bg-blue-500 hover:text-white"><i class="fas fa-key"></i> Cambiar Contraseña</a>
+            <form action="{% url 'logout' %}" method="post" class="block px-4 py-2 text-gray-800 hover:bg-blue-500 hover:text-white">
+              {% csrf_token %}
+              <button type="submit" class="w-full text-left"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</button>
+            </form>
+          </div>
+        </div>
         {% else %}
-        <a href="{% url 'login' %}" class="text-white mr-4">Login</a>
-        <a href="{% url 'register' %}" class="text-white">Registro</a>
+        <a href="{% url 'login' %}" class="text-white mr-4"><i class="fas fa-sign-in-alt"></i> Login</a>
+        <a href="{% url 'register' %}" class="text-white"><i class="fas fa-user-plus"></i> Registro</a>
         {% endif %}
       </div>
     </div>
   </nav>
+
   <div class="container mx-auto">
     {% if messages %}
     {% for message in messages %}
@@ -49,6 +125,20 @@
     {% endif %}
     {% block content %}{% endblock %}
   </div>
+
+  <script>
+    // Toggle dropdown menu
+    document.getElementById('userMenuButton').addEventListener('click', function () {
+      document.getElementById('userMenu').classList.toggle('show');
+    });
+
+    // Close dropdown menu when clicking outside
+    window.addEventListener('click', function (e) {
+      if (!document.getElementById('userMenuButton').contains(e.target)) {
+        document.getElementById('userMenu').classList.remove('show');
+      }
+    });
+  </script>
 </body>
 
 </html>
