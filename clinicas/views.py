@@ -1,26 +1,26 @@
+#Django packages
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
-from .forms import PacienteForm, LoginForm, RegistroForm, CambioPasswordForm, PerfilForm
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
+from django.views.decorators.csrf import csrf_exempt, csrf_protect
+# clinicas/models.py
+from .models import Consulta, Paciente, Doctor
+#clinicas/forms.py
+from .forms import LoginForm, RegistroForm, CambioPasswordForm, PerfilForm, ConsultaForm
+from django.contrib.auth import logout
 
 @login_required(login_url='/login')
 def index(request):
-    return render(request, 'index.html')
+    consultas = Consulta.objects.all()
+    doctores = Doctor.objects.all()
+    pacientes = Paciente.objects.all()
+    form = ConsultaForm()  # Crear una instancia del formulario
+    return render(request, 'index.html', {'consultas': consultas, 'form': form, 'doctores': doctores, 'pacientes': pacientes})  # Pasar el formulario al contexto
 
-@login_required
-def paciente_create(request):
-    if request.method == 'POST':
-        form = PacienteForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Paciente creado correctamente.')
-            return redirect('index')
-    else:
-        form = PacienteForm()
-    return render(request, 'paciente_form.html', {'form': form})
-
+# Login, registro
 def user_login(request):
     if request.method == 'POST':
         form = LoginForm(request, data=request.POST)
@@ -59,7 +59,14 @@ def user_register(request):
         form = RegistroForm()
     return render(request, 'register.html', {'form': form})
 
-login_required
+@login_required
+def user_logout(request):
+    logout(request)
+    messages.success(request, 'Has cerrado sesión correctamente.')
+    return redirect('login')
+
+# Cambiar contraseña, perfil
+@login_required
 def cambiar_password(request):
     if request.method == 'POST':
         form = CambioPasswordForm(request.user, request.POST)
@@ -86,3 +93,29 @@ def perfil_usuario(request):
         form = PerfilForm(instance=request.user)
     
     return render(request, 'perfil.html', {'form': form})
+
+# Consultas y pacientes
+@login_required
+def consulta_create(request):
+    if request.method == 'POST':
+        form = ConsultaForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Consulta creada correctamente.')
+            return redirect('index')
+    else:
+        form = ConsultaForm()
+    return render(request, 'consulta_form.html', {'form': form})
+
+@login_required
+def consulta_update(request, id):
+    consulta = Consulta.objects.get(id=id)
+    if request.method == 'POST':
+        form = ConsultaForm(request.POST, instance=consulta)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Consulta actualizada correctamente.')
+            return redirect('index')
+    else:
+        form = ConsultaForm(instance=consulta)
+    return render(request, 'consulta_form.html', {'form': form})

@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
+# cargar variables de entorno .env
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -28,7 +29,8 @@ SECRET_KEY = 'django-insecure-61y^-3f9qi=d+p2vy#p2q5+t*sn3yep%i2(ro3f1=yg^+yu4+a
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
+#CSRF_TRUSTED_ORIGINS = [os.getenv('DOMAIN'), '127.0.0.1:8000']
 
 # Application definition
 
@@ -104,13 +106,12 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
 LANGUAGE_CODE = 'es-mx'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Mexico_City'
 
 USE_I18N = True
 
@@ -121,6 +122,10 @@ AUTH_USER_MODEL = 'clinicas.Usuario'
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
 STATIC_URL = 'static/'
 
 # Archivos de medios (imágenes, etc.)

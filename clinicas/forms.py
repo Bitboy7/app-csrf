@@ -1,11 +1,16 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm
-from .models import Paciente, Usuario
+from .models import Paciente, Usuario, Consulta
 
-class PacienteForm(forms.ModelForm):
+class ConsultaForm(forms.ModelForm):
     class Meta:
-        model = Paciente
-        fields = ['nombre', 'fecha_nacimiento', 'telefono']
+        model = Consulta
+        fields = ['doctor', 'paciente', 'fecha', 'motivo', 'diagnostico']
+        widgets = {
+            'fecha': forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'}),
+            'motivo': forms.Textarea(attrs={'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'}),
+            'diagnostico': forms.Textarea(attrs={'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'}),
+        }
 
 class LoginForm(AuthenticationForm):
     username = forms.CharField(

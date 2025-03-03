@@ -3,26 +3,26 @@
 {% block title %}Mi Perfil{% endblock %}
 
 {% block content %}
-<div class="container mx-auto py-8">
-    <div class="bg-white p-8 rounded-lg shadow-lg">
-        <div class="flex flex-col md:flex-row">
+<div class="container mx-auto py-8 px-4">
+    <div class="bg-white p-4 md:p-8 rounded-lg shadow-lg">
+        <div class="flex flex-col">
             <!-- Foto de perfil -->
-            <div class="md:w-1/3 p-4 flex flex-col items-center">
+            <div class="w-full p-4 flex flex-col items-center">
                 {% if user.foto_perfil %}
                 <img src="{{ user.foto_perfil.url }}" alt="Foto de perfil"
-                    class="w-48 h-48 object-cover rounded-full mb-4 shadow">
+                    class="w-32 h-32 md:w-48 md:h-48 object-cover rounded-full mb-4 shadow">
                 {% else %}
-                <div class="w-48 h-48 rounded-full bg-gray-300 flex items-center justify-center mb-4 shadow">
-                    <i class="fas fa-user text-6xl text-gray-500"></i>
+                <div class="w-32 h-32 md:w-48 md:h-48 rounded-full bg-gray-300 flex items-center justify-center mb-4 shadow">
+                    <i class="fas fa-user text-4xl md:text-6xl text-gray-500"></i>
                 </div>
                 {% endif %}
-                <h2 class="text-2xl font-bold text-center">{{ user.username }}</h2>
+                <h2 class="text-xl md:text-2xl font-bold text-center">{{ user.username }}</h2>
                 <p class="text-gray-600 text-center mt-2">{{ user.email }}</p>
             </div>
 
             <!-- Formulario de perfil -->
-            <div class="md:w-2/3 p-4">
-                <h1 class="text-3xl font-bold mb-6 text-blue-600">Mi Perfil</h1>
+            <div class="w-full p-4">
+                <h1 class="text-2xl md:text-3xl font-bold mb-6 text-blue-600">Mi Perfil</h1>
 
                 <form method="post" enctype="multipart/form-data">
                     {% csrf_token %}
@@ -40,50 +40,57 @@
                     {% endif %}
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="mb-4">
-                            <label for="id_first_name" class="block text-gray-700 font-bold mb-2">Nombre</label>
-                            {{ form.first_name }}
+                        <!-- Primera columna -->
+                        <div>
+                            <div class="mb-4">
+                                <label for="id_first_name" class="block text-gray-700 font-bold mb-2">Nombre</label>
+                                {{ form.first_name }}
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="id_last_name" class="block text-gray-700 font-bold mb-2">Apellidos</label>
+                                {{ form.last_name }}
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="id_email" class="block text-gray-700 font-bold mb-2">Correo electrónico</label>
+                                {{ form.email }}
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="id_telefono" class="block text-gray-700 font-bold mb-2">Teléfono</label>
+                                {{ form.telefono }}
+                            </div>
                         </div>
 
-                        <div class="mb-4">
-                            <label for="id_last_name" class="block text-gray-700 font-bold mb-2">Apellidos</label>
-                            {{ form.last_name }}
-                        </div>
+                        <!-- Segunda columna -->
+                        <div>
+                            <div class="mb-4">
+                                <label for="id_direccion" class="block text-gray-700 font-bold mb-2">Dirección</label>
+                                {{ form.direccion }}
+                            </div>
 
-                        <div class="mb-4">
-                            <label for="id_email" class="block text-gray-700 font-bold mb-2">Correo electrónico</label>
-                            {{ form.email }}
-                        </div>
+                            <div class="mb-4">
+                                <label for="id_fecha_nacimiento" class="block text-gray-700 font-bold mb-2">Fecha de nacimiento</label>
+                                {{ form.fecha_nacimiento }}
+                            </div>
 
-                        <div class="mb-4">
-                            <label for="id_telefono" class="block text-gray-700 font-bold mb-2">Teléfono</label>
-                            {{ form.telefono }}
-                        </div>
-
-                        <div class="mb-4">
-                            <label for="id_direccion" class="block text-gray-700 font-bold mb-2">Dirección</label>
-                            {{ form.direccion }}
-                        </div>
-
-                        <div class="mb-4">
-                            <label for="id_fecha_nacimiento" class="block text-gray-700 font-bold mb-2">Fecha de
-                                nacimiento</label>
-                            {{ form.fecha_nacimiento }}
-                        </div>
-
-                        <div class="mb-4 col-span-2">
-                            <label for="id_foto_perfil" class="block text-gray-700 font-bold mb-2">Foto de
-                                perfil</label>
-                            {{ form.foto_perfil }}
+                            <div class="mb-4">
+                                <label for="id_foto_perfil" class="block text-gray-700 font-bold mb-2">Foto de perfil</label>
+                                {{ form.foto_perfil }}
+                            </div>
+                            <br>
+                            <div class="mb-4">
+                              <button type="submit"
+                                class="w-full md:w-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                                Actualizar Perfil
+                              </button>
+                            </div>
+                               
                         </div>
                     </div>
 
-                    <div class="flex justify-end mt-6">
-                        <button type="submit"
-                            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                            Actualizar Perfil
-                        </button>
-                    </div>
+                  
                 </form>
             </div>
         </div>

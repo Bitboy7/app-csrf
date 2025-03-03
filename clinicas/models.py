@@ -10,18 +10,18 @@ class Usuario(AbstractUser):
     # Define custom related_name attributes to avoid clashes
     groups = models.ManyToManyField(
         'auth.Group',
-        verbose_name='groups',
+        verbose_name='grupos',
         blank=True,
-        help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.',
-        related_name='usuario_set',  # Custom related_name
+        help_text='Los grupos a los que pertenece este usuario. Un usuario obtendrá todos los permisos otorgados a cada uno de sus grupos.',
+        related_name='usuario_set',  # Nombre relacionado personalizado
         related_query_name='usuario'
     )
     user_permissions = models.ManyToManyField(
         'auth.Permission',
-        verbose_name='user permissions',
+        verbose_name='permisos de usuario',
         blank=True,
-        help_text='Specific permissions for this user.',
-        related_name='usuario_set',  # Custom related_name
+        help_text='Permisos específicos para este usuario.',
+        related_name='usuario_set',  # Nombre relacionado personalizado
         related_query_name='usuario'
     )
 
@@ -40,17 +40,20 @@ class Doctor(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.nombre
+        return f'{self.nombre} - {self.especialidad}'
 
 class Paciente(models.Model):
     nombre = models.CharField(max_length=100)
-    fecha_nacimiento = models.DateField()
-    telefono = models.CharField(max_length=15)
+    paterno = models.CharField(max_length=100, blank=True)
+    materno = models.CharField(max_length=100, blank=True, null=True)  
+    fecha_nacimiento = models.DateField(default='2000-01-01')
+    telefono = models.CharField(max_length=15, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    genero = models.CharField(max_length=1, choices=(('M', 'Masculino'), ('F', 'Femenino')), default='M')
 
     def __str__(self):
-        return self.nombre
+         return f'{self.nombre} - {self.fecha_nacimiento}'
 
 class Consulta(models.Model):
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)

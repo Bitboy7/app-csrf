@@ -20,16 +20,16 @@ from clinicas import views
 from django.contrib.auth.views import LogoutView
 from django.conf import settings
 from django.conf.urls.static import static
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index, name='index'),  # Ruta principal
-    path('paciente/create/', views.paciente_create, name='paciente_create'),  # Ruta para crear un paciente
     path('login/', views.user_login, name='login'),  # Ruta para el login
     path('register/', views.user_register, name='register'),  # Ruta para el registro
     path('logout/', LogoutView.as_view(next_page='login'), name='logout'),  # Ruta para el logout
     path('cambiar-password/', views.cambiar_password, name='cambiar_password'),  # Nueva ruta para cambiar contraseña
     path('perfil/', views.perfil_usuario, name='perfil'),  # Nueva ruta para el perfil
-
+    path('consulta/create/', views.consulta_create, name='consulta_create'),  # Nueva ruta para crear consulta
 ]
 
 # Servir archivos media durante el desarrollo
