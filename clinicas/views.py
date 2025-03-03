@@ -12,7 +12,8 @@ from .models import Consulta, Paciente, Doctor
 from .forms import LoginForm, RegistroForm, CambioPasswordForm, PerfilForm, ConsultaForm
 from django.contrib.auth import logout
 
-@login_required(login_url='/login')
+@login_required
+#@csrf_exempt
 def index(request):
     consultas = Consulta.objects.all()
     doctores = Doctor.objects.all()
@@ -20,8 +21,12 @@ def index(request):
     form = ConsultaForm()  # Crear una instancia del formulario
     return render(request, 'index.html', {'consultas': consultas, 'form': form, 'doctores': doctores, 'pacientes': pacientes})  # Pasar el formulario al contexto
 
-# Login, registro
+# Login, registro, logout
+#@csrf_exempt
 def user_login(request):
+    if request.user.is_authenticated:
+        return redirect('index')  # Redirigir al ínicio si ya ha iniciado sesión
+
     if request.method == 'POST':
         form = LoginForm(request, data=request.POST)
         if form.is_valid():
@@ -40,7 +45,11 @@ def user_login(request):
         form = LoginForm()
     return render(request, 'login.html', {'form': form})
 
+#@csrf_exempt
 def user_register(request):
+    if request.user.is_authenticated:
+        return redirect('index')  # Redirect to index if already logged in
+
     if request.method == 'POST':
         form = RegistroForm(request.POST)
         if form.is_valid():
@@ -60,13 +69,16 @@ def user_register(request):
     return render(request, 'register.html', {'form': form})
 
 @login_required
+#@csrf_exempt
 def user_logout(request):
+    request.session.flush()  # Destroy all session data
     logout(request)
     messages.success(request, 'Has cerrado sesión correctamente.')
     return redirect('login')
 
 # Cambiar contraseña, perfil
 @login_required
+#@csrf_exempt
 def cambiar_password(request):
     if request.method == 'POST':
         form = CambioPasswordForm(request.user, request.POST)
@@ -82,6 +94,7 @@ def cambiar_password(request):
     return render(request, 'cambiar_pass.html', {'form': form})
 
 @login_required
+#@csrf_exempt
 def perfil_usuario(request):
     if request.method == 'POST':
         form = PerfilForm(request.POST, request.FILES, instance=request.user)
@@ -94,8 +107,9 @@ def perfil_usuario(request):
     
     return render(request, 'perfil.html', {'form': form})
 
-# Consultas y pacientes
+# Consultas
 @login_required
+#@csrf_exempt
 def consulta_create(request):
     if request.method == 'POST':
         form = ConsultaForm(request.POST)
@@ -107,15 +121,3 @@ def consulta_create(request):
         form = ConsultaForm()
     return render(request, 'consulta_form.html', {'form': form})
 
-@login_required
-def consulta_update(request, id):
-    consulta = Consulta.objects.get(id=id)
-    if request.method == 'POST':
-        form = ConsultaForm(request.POST, instance=consulta)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Consulta actualizada correctamente.')
-            return redirect('index')
-    else:
-        form = ConsultaForm(instance=consulta)
-    return render(request, 'consulta_form.html', {'form': form})
