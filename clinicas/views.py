@@ -9,11 +9,10 @@ from django.views.decorators.csrf import csrf_exempt, csrf_protect
 # clinicas/models.py
 from .models import Consulta, Paciente, Doctor
 #clinicas/forms.py
-from .forms import LoginForm, RegistroForm, CambioPasswordForm, PerfilForm, ConsultaForm
+from .forms import LoginForm, RegistroForm, CambioPasswordForm, PerfilForm, ConsultaForm, DoctorForm
 from django.contrib.auth import logout
 
 @login_required
-@csrf_exempt
 def index(request):
     consultas = Consulta.objects.all()
     doctores = Doctor.objects.all()
@@ -22,7 +21,6 @@ def index(request):
     return render(request, 'index.html', {'consultas': consultas, 'form': form, 'doctores': doctores, 'pacientes': pacientes})  # Pasar el formulario al contexto
 
 # Login, registro, logout
-@csrf_exempt
 def user_login(request):
     if request.user.is_authenticated:
         return redirect('index')  # Redirigir al ínicio si ya ha iniciado sesión
@@ -45,7 +43,6 @@ def user_login(request):
         form = LoginForm()
     return render(request, 'login.html', {'form': form})
 
-@csrf_exempt
 def user_register(request):
     if request.user.is_authenticated:
         return redirect('index')  # Redirect to index if already logged in
@@ -69,7 +66,6 @@ def user_register(request):
     return render(request, 'register.html', {'form': form})
 
 @login_required
-@csrf_exempt
 def user_logout(request):
     request.session.flush()  # Destroy all session data
     logout(request)
@@ -78,7 +74,6 @@ def user_logout(request):
 
 # Cambiar contraseña, perfil
 @login_required
-@csrf_exempt
 def cambiar_password(request):
     if request.method == 'POST':
         form = CambioPasswordForm(request.user, request.POST)
@@ -94,7 +89,6 @@ def cambiar_password(request):
     return render(request, 'cambiar_pass.html', {'form': form})
 
 @login_required
-@csrf_exempt
 def perfil_usuario(request):
     if request.method == 'POST':
         form = PerfilForm(request.POST, request.FILES, instance=request.user)
@@ -120,3 +114,15 @@ def consulta_create(request):
         form = ConsultaForm()
     return render(request, 'consulta_form.html', {'form': form})
 
+# Doctores
+@login_required
+def doctor_create(request):
+    if request.method == 'POST':
+        form = DoctorForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Doctor creada correctamente.')
+            return redirect('index')
+    else:
+        form = DoctorForm()
+    return render(request, 'doctor_form.html', {'form': form})
