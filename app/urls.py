@@ -30,6 +30,8 @@ urlpatterns = [
     path('cambiar-password/', views.cambiar_password, name='cambiar_password'),  # Nueva ruta para cambiar contraseña
     path('perfil/', views.perfil_usuario, name='perfil'),  # Nueva ruta para el perfil
     path('consulta/create/', views.consulta_create, name='consulta_create'),  # Nueva ruta para crear consulta
+    path('doctor/create/', views.doctor_create, name='doctor_create'),  # Nueva ruta para crear Doctores
+    path('paciente/create/', views.paciente_create, name='paciente_create'),  # Nueva ruta para crear Pacientes
 ]
 
 # Servir archivos media durante el desarrollo

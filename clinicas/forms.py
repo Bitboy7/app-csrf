@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm, SetPasswordForm
-from .models import Paciente, Usuario, Consulta
+from .models import Paciente, Usuario, Consulta, Doctor
 
 class ConsultaForm(forms.ModelForm):
     class Meta:
@@ -136,3 +136,56 @@ class PerfilForm(forms.ModelForm):
     class Meta:
         model = Usuario
         fields = ['first_name', 'last_name', 'email', 'telefono', 'direccion', 'fecha_nacimiento', 'foto_perfil']
+        
+        
+class DoctorForm(forms.ModelForm):
+    nombre = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline', 'placeholder': 'Nombre'})
+    )
+    especialidad = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline', 'placeholder': 'Especialidad'})
+    )
+    telefono = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline', 'placeholder': 'Teléfono'})
+    )
+
+    class Meta:
+        model = Doctor
+        fields = ['nombre', 'especialidad', 'telefono']
+        
+class PacienteForm(forms.ModelForm):
+    nombre = forms.CharField(
+        required=True,
+        widget=forms.TextInput(attrs={'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline', 'placeholder': 'Nombre'})
+    )
+    paterno = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline', 'placeholder': 'Apellido Paterno'})
+    )
+    materno = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline', 'placeholder': 'Apellido Materno'})
+    )
+    telefono = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline', 'placeholder': 'Teléfono'})
+    )
+    direccion = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline', 'placeholder': 'Dirección'})
+    )
+    fecha_nacimiento = forms.DateField(
+        required=True,
+        widget=forms.DateInput(attrs={'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline', 'type': 'date'})
+    )
+    genero = forms.ChoiceField(
+        choices=(('M', 'Masculino'), ('F', 'Femenino')),
+        widget=forms.Select(attrs={'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'})
+    )
+
+    class Meta:
+        model = Paciente
+        fields = ['nombre', 'paterno', 'materno', 'telefono', 'direccion', 'fecha_nacimiento', 'genero']

@@ -9,7 +9,7 @@ from django.views.decorators.csrf import csrf_exempt, csrf_protect
 # clinicas/models.py
 from .models import Consulta, Paciente, Doctor
 #clinicas/forms.py
-from .forms import LoginForm, RegistroForm, CambioPasswordForm, PerfilForm, ConsultaForm, DoctorForm
+from .forms import *
 from django.contrib.auth import logout
 
 @login_required
@@ -126,3 +126,16 @@ def doctor_create(request):
     else:
         form = DoctorForm()
     return render(request, 'doctor_form.html', {'form': form})
+
+# Pacientes
+@login_required
+def paciente_create(request):
+    if request.method == 'POST':
+        form = PacienteForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Paciente creada correctamente.')
+            return redirect('index')
+    else:
+        form = PacienteForm()
+    return render(request, 'paciente_form.html', {'form': form})
