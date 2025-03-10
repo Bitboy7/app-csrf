@@ -19,6 +19,10 @@
         <span class="font-semibold text-gray-800 hover:text-blue-600">{{ doctor.nombre }}</span>
         <span class="text-blue-500 px-2 py-1 bg-blue-50 rounded-full text-sm font-bold">{{ doctor.especialidad }}</span>
         <span class="text-gray-600 hover:text-gray-800 transition-colors">{{ doctor.telefono }}</span>
+        <span>
+          <a href="{% url 'doctor_edit' doctor.id %}" class="text-blue-600 hover:text-blue-800">Editar</a> |
+          <a href="{% url 'doctor_delete' doctor.id %}" class="text-red-600 hover:text-red-800">Borrar</a>
+        </span>
       </li>
       {% endfor %}
     </ul>
@@ -27,12 +31,15 @@
     <h2 class="text-2xl font-bold mb-2 text-gray-800">Pacientes</h2>
     <ul>
       {% for paciente in pacientes %}
-        <li
-          class="mb-2 p-3 border-b border-gray-200 hover:bg-blue-50 transition-all duration-200 rounded-md flex items-center justify-between">
+        <li class="mb-2 p-3 border-b border-gray-200 hover:bg-blue-50 transition-all duration-200 rounded-md flex items-center justify-between">
           <span class="font-semibold text-gray-800 hover:text-blue-600">{{ paciente.nombre }}</span>
           <span class="font-semibold text-gray-800 hover:text-blue-600">{{ paciente.paterno }}</span>
           <span class="text-gray-600 hover:text-gray-800 transition-colors">{{ paciente.materno }}</span> -
           <span class="text-gray-600 hover:text-gray-800 transition-colors">{{ paciente.genero }}</span>
+          <span>
+            <a href="{% url 'paciente_edit' paciente.id %}" class="text-blue-600 hover:text-blue-800">Editar</a> |
+            <a href="{% url 'paciente_delete' paciente.id %}" class="text-red-600 hover:text-red-800">Borrar</a>
+          </span>
         </li>
       {% endfor %}
     </ul>
@@ -49,6 +56,7 @@
         <th class="py-2 px-4 border-b border-gray-200">Doctor</th>
         <th class="py-2 px-4 border-b border-gray-200">Motivo</th>
         <th class="py-2 px-4 border-b border-gray-200">Diagnóstico</th>
+        <th class="py-2 px-4 border-b border-gray-200">Acciones</th>
       </tr>
     </thead>
     <tbody>
@@ -59,10 +67,14 @@
         <td class="py-2 px-4 border-b border-gray-200">{{ consulta.doctor.nombre }}</td>
         <td class="py-2 px-4 border-b border-gray-200">{{ consulta.motivo }}</td>
         <td class="py-2 px-4 border-b border-gray-200">{{ consulta.diagnostico }}</td>
+        <td class="py-2 px-4 border-b border-gray-200">
+          <a href="{% url 'consulta_edit' consulta.id %}" class="text-blue-600 hover:text-blue-800">Editar</a> |
+          <a href="{% url 'consulta_delete' consulta.id %}" class="text-red-600 hover:text-red-800">Borrar</a>
+        </td>
       </tr>
       {% empty %}
       <tr>
-        <td colspan="5" class="py-2 px-4 border-b border-gray-200 text-center">No tienes consultas registradas.</td>
+        <td colspan="6" class="py-2 px-4 border-b border-gray-200 text-center">No tienes consultas registradas.</td>
       </tr>
       {% endfor %}
     </tbody>

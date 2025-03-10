@@ -31,7 +31,14 @@ urlpatterns = [
     path('perfil/', views.perfil_usuario, name='perfil'),  # Nueva ruta para el perfil
     path('consulta/create/', views.consulta_create, name='consulta_create'),  # Nueva ruta para crear consulta
     path('doctor/create/', views.doctor_create, name='doctor_create'),  # Nueva ruta para crear Doctores
-    path('paciente/create/', views.paciente_create, name='paciente_create'),  # Nueva ruta para crear Pacientes
+    path('paciente/create/', views.paciente_create, name='paciente_create'), 
+    path('consulta/nueva/', views.consulta_create, name='consulta_create'),
+    path('consulta/editar/<int:consulta_id>/', views.consulta_edit, name='consulta_edit'),
+    path('consulta/borrar/<int:consulta_id>/', views.consulta_delete, name='consulta_delete'), 
+    path('doctor/editar/<int:doctor_id>/', views.doctor_edit, name='doctor_edit'),
+    path('doctor/borrar/<int:doctor_id>/', views.doctor_delete, name='doctor_delete'),
+    path('paciente/editar/<int:paciente_id>/', views.paciente_edit, name='paciente_edit'),
+    path('paciente/borrar/<int:paciente_id>/', views.paciente_delete, name='paciente_delete'),
 ]
 
 # Servir archivos media durante el desarrollo
