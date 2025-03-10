@@ -11,6 +11,7 @@ from .models import Consulta, Paciente, Doctor
 #clinicas/forms.py
 from .forms import *
 from django.contrib.auth import logout
+from django.shortcuts import get_object_or_404
 
 @login_required
 def index(request):
@@ -114,6 +115,26 @@ def consulta_create(request):
         form = ConsultaForm()
     return render(request, 'consulta_form.html', {'form': form})
 
+@login_required
+def consulta_edit(request, consulta_id):
+    consulta = get_object_or_404(Consulta, id=consulta_id)
+    if request.method == 'POST':
+        form = ConsultaForm(request.POST, instance=consulta)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Consulta actualizada correctamente.')
+            return redirect('index')
+    else:
+        form = ConsultaForm(instance=consulta)
+    return render(request, 'consulta_form.html', {'form': form})
+
+@login_required
+def consulta_delete(request, consulta_id):
+    consulta = get_object_or_404(Consulta, id=consulta_id)
+    consulta.delete()
+    messages.success(request, 'Consulta eliminada correctamente.')
+    return redirect('index')
+
 # Doctores
 @login_required
 def doctor_create(request):
@@ -121,11 +142,31 @@ def doctor_create(request):
         form = DoctorForm(request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Doctor creada correctamente.')
+            messages.success(request, 'Doctor creado correctamente.')
             return redirect('index')
     else:
         form = DoctorForm()
     return render(request, 'doctor_form.html', {'form': form})
+
+@login_required
+def doctor_edit(request, doctor_id):
+    doctor = get_object_or_404(Doctor, id=doctor_id)
+    if request.method == 'POST':
+        form = DoctorForm(request.POST, instance=doctor)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Doctor actualizado correctamente.')
+            return redirect('index')
+    else:
+        form = DoctorForm(instance=doctor)
+    return render(request, 'doctor_form.html', {'form': form})
+
+@login_required
+def doctor_delete(request, doctor_id):
+    doctor = get_object_or_404(Doctor, id=doctor_id)
+    doctor.delete()
+    messages.success(request, 'Doctor eliminado correctamente.')
+    return redirect('index')
 
 # Pacientes
 @login_required
@@ -134,8 +175,28 @@ def paciente_create(request):
         form = PacienteForm(request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Paciente creada correctamente.')
+            messages.success(request, 'Paciente creado correctamente.')
             return redirect('index')
     else:
         form = PacienteForm()
     return render(request, 'paciente_form.html', {'form': form})
+
+@login_required
+def paciente_edit(request, paciente_id):
+    paciente = get_object_or_404(Paciente, id=paciente_id)
+    if request.method == 'POST':
+        form = PacienteForm(request.POST, instance=paciente)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Paciente actualizado correctamente.')
+            return redirect('index')
+    else:
+        form = PacienteForm(instance=paciente)
+    return render(request, 'paciente_form.html', {'form': form})
+
+@login_required
+def paciente_delete(request, paciente_id):
+    paciente = get_object_or_404(Paciente, id=paciente_id)
+    paciente.delete()
+    messages.success(request, 'Paciente eliminado correctamente.')
+    return redirect('index')
