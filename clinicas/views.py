@@ -196,7 +196,8 @@ def paciente_edit(request, paciente_id):
 
 @login_required
 def paciente_delete(request, paciente_id):
-    paciente = get_object_or_404(Paciente, id=paciente_id)
-    paciente.delete()
-    messages.success(request, 'Paciente eliminado correctamente.')
+    if request.method == 'POST':
+        paciente = get_object_or_404(Paciente, id=paciente_id)
+        paciente.delete()
+        messages.success(request, 'Paciente eliminado correctamente.')
     return redirect('index')
