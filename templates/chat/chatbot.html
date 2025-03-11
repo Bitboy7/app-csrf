@@ -1,0 +1,331 @@
+{% extends 'base.html' %}
+
+{% block title %}Asistente Virtual Médico{% endblock %}
+
+{% block content %}
+<div class="container mx-auto py-8">
+    <div class="max-w-4xl mx-auto">
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <h1 class="text-2xl font-bold text-center text-blue-600 mb-6">
+                <i class="fas fa-robot mr-2"></i>Asistente Virtual
+            </h1>
+
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-2 mb-2 rounded">
+                <p class="text-blue-700">
+                    <i class="fas fa-info-circle mr-1"></i> Este asistente virtual puede responder preguntas médicas
+                    generales,
+                    informar sobre síntomas comunes y proporcionar recomendaciones preliminares.
+                    <strong>No sustituye la consulta con un profesional médico.</strong>
+                </p>
+            </div>
+
+            <!-- Selector de proveedor de IA -->
+            <div class="flex justify-end mb-4">
+                <label for="ai-provider" class="text-sm text-gray-600 mr-2">Proveedor de IA:</label>
+                <div class="inline-flex rounded-md shadow-sm " role="group">
+                    <button type="button" id="openai-btn"
+                        class="ai-provider-btn px-4 py-2 text-sm font-medium text-gray-900 bg-blue border border-gray-200 rounded-l-lg hover:bg-blue-100 hover:text-blue-700 focus:z-10 focus:text-gray-700">
+                        <i class="fas fa-brain mr-1"></i> OpenAI
+                    </button>
+                    <button type="button" id="groq-btn"
+                        class="ai-provider-btn px-4 py-2 text-sm font-medium text-gray-900 bg-blue border border-gray-200 rounded-r-lg hover:bg-blue-100 hover:text-blue-700 focus:z-10 focus:text-gray-700">
+                        <i class="fas fa-microchip mr-1"></i> Groq
+                    </button>
+                </div>
+            </div>
+
+            <div id="chatbox" class="h-96 overflow-y-auto border border-gray-300 rounded-lg p-2 mb-1">
+                <div class="flex items-start mb-4">
+                    <div class="flex-shrink-0 bg-blue-500 text-white rounded-full p-2 mr-2">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="bg-blue-100 rounded-lg p-3 max-w-3/4">
+                        <p>¡Hola! Soy tu asistente médico virtual. ¿En qué puedo ayudarte hoy?</p>
+                        <p class="text-xs text-gray-500 mt-1">Puedes preguntarme sobre síntomas, preparación para
+                            consultas o información general de salud.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex">
+                <input type="text" id="user-message"
+                    class="flex-grow border border-gray-300 rounded-l-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Escribe tu pregunta aquí..." autofocus>
+                <button id="send-button"
+                    class="bg-blue-500 text-white px-4 py-2 rounded-r-lg hover:bg-blue-600 transition-colors">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+
+            <div class="mt-4 flex justify-between">
+                <button id="reset-button" class="text-sm text-gray-600 hover:text-red-600">
+                    <i class="fas fa-redo-alt mr-1"></i> Reiniciar conversación
+                </button>
+                <div class="text-sm text-gray-500">
+                    <div id="typing" class="hidden">
+                        <span class="typing-dot">.</span>
+                        <span class="typing-dot">.</span>
+                        <span class="typing-dot">.</span>
+                    </div>
+                </div>
+                <a href="{% url 'chat_history' %}" class="text-blue-500 hover:text-blue-700">
+                    <i class="fas fa-history mr-1"></i> Ver historial
+                </a>
+            </div>
+            
+        </div>
+
+        <div class="mt-8 bg-white p-6 rounded-lg shadow-lg">
+            <h2 class="text-xl font-bold text-blue-600 mb-4">Preguntas frecuentes</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <button class="faq-button text-left p-3 border border-gray-300 rounded-lg hover:bg-blue-50 transition-colors">
+                     ¿Cuáles son los síntomas de la gripe?
+                </button>
+                <button class="faq-button text-left p-3 border border-gray-300 rounded-lg hover:bg-blue-50 transition-colors">
+                    <i class="fas fa-head-side-virus mr-2"></i> ¿Cuándo debo acudir al médico por dolor de cabeza?
+                </button>
+                <button class="faq-button text-left p-3 border border-gray-300 rounded-lg hover:bg-blue-50 transition-colors">
+                    <i class="fas fa-notes-medical mr-2"></i> ¿Cómo puedo prepararme para mi consulta médica?
+                </button>
+                <button class="faq-button text-left p-3 border border-gray-300 rounded-lg hover:bg-blue-50 transition-colors">
+                    <i class="fas fa-thermometer-three-quarters mr-2"></i> ¿Qué debo hacer si tengo fiebre alta?
+                </button>
+                <button class="faq-button text-left p-3 border border-gray-300 rounded-lg hover:bg-blue-50 transition-colors">
+                    <i class="fas fa-virus mr-2"></i> ¿Cuáles son los síntomas del COVID-19?
+                </button>
+                <button class="faq-button text-left p-3 border border-gray-300 rounded-lg hover:bg-blue-50 transition-colors">
+                    <i class="fas fa-shield-virus mr-2"></i> ¿Cómo puedo prevenir la propagación de enfermedades?
+                </button>
+                <button class="faq-button text-left p-3 border border-gray-300 rounded-lg hover:bg-blue-50 transition-colors">
+                    <i class="fas fa-allergies mr-2"></i> ¿Qué debo hacer si tengo una reacción alérgica?
+                </button>
+                <button class="faq-button text-left p-3 border border-gray-300 rounded-lg hover:bg-blue-50 transition-colors">
+                    <i class="fas fa-heartbeat mr-2"></i> ¿Cuándo debo preocuparme por un dolor en el pecho?
+                </button>
+            </div>
+        </div>
+            
+    </div>
+</div>
+
+<style>
+    .typing-dot {
+        animation: typing 1s infinite;
+        display: inline-block;
+    }
+
+    .typing-dot:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+
+    .typing-dot:nth-child(3) {
+        animation-delay: 0.4s;
+    }
+
+    @keyframes typing {
+        0% {
+            opacity: 0.2;
+        }
+
+        50% {
+            opacity: 1;
+        }
+
+        100% {
+            opacity: 0.2;
+        }
+    }
+
+    .ai-provider-active {
+        background-color: #3b82f6;
+        color: white;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const chatbox = document.getElementById('chatbox');
+        const userMessageInput = document.getElementById('user-message');
+        const sendButton = document.getElementById('send-button');
+        const resetButton = document.getElementById('reset-button');
+        const typingIndicator = document.getElementById('typing');
+        const faqButtons = document.querySelectorAll('.faq-button');
+        const openaiBtn = document.getElementById('openai-btn');
+        const groqBtn = document.getElementById('groq-btn');
+
+        // Por defecto, usamos OpenAI (o lo que esté configurado en el servidor)
+        let currentProvider = 'openai';
+
+        // Activar botón de OpenAI por defecto
+        openaiBtn.classList.add('ai-provider-active');
+
+        // Manejar cambio de proveedor
+        openaiBtn.addEventListener('click', function () {
+            if (currentProvider !== 'openai') {
+                currentProvider = 'openai';
+                openaiBtn.classList.add('ai-provider-active');
+                groqBtn.classList.remove('ai-provider-active');
+                resetChatWithProvider();
+            }
+        });
+
+        groqBtn.addEventListener('click', function () {
+            if (currentProvider !== 'groq') {
+                currentProvider = 'groq';
+                groqBtn.classList.add('ai-provider-active');
+                openaiBtn.classList.remove('ai-provider-active');
+                resetChatWithProvider();
+            }
+        });
+
+        // Función para reiniciar el chat con un nuevo proveedor
+        function resetChatWithProvider() {
+            // Mostrar mensaje informativo
+            addMessage('Sistema', `Cambiando al proveedor ${currentProvider.toUpperCase()}...`);
+
+            // Reiniciar la conversación con el nuevo proveedor
+            sendProviderChangeRequest().then(response => {
+                chatbox.innerHTML = '';
+                addMessage('Asistente', '¡Hola! Soy tu asistente médico virtual. ¿En qué puedo ayudarte hoy?');
+            });
+        }
+
+        // Función para añadir un mensaje al chatbox
+        function addMessage(sender, message, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'flex items-start mb-4';
+
+            const iconDiv = document.createElement('div');
+            iconDiv.className = isUser ?
+                'flex-shrink-0 bg-green-500 text-white rounded-full p-2 mr-2' :
+                'flex-shrink-0 bg-blue-500 text-white rounded-full p-2 mr-2';
+
+            const icon = document.createElement('i');
+            if (sender === 'Sistema') {
+                icon.className = 'fas fa-cog';
+            } else {
+                icon.className = isUser ? 'fas fa-user' : 'fas fa-robot';
+            }
+            iconDiv.appendChild(icon);
+
+            const textDiv = document.createElement('div');
+            textDiv.className = isUser ?
+                'bg-green-100 rounded-lg p-3 max-w-3/4' :
+                sender === 'Sistema' ? 'bg-gray-100 rounded-lg p-3 max-w-3/4' : 'bg-blue-100 rounded-lg p-3 max-w-3/4';
+
+            textDiv.innerHTML = `<p>${message.replace(/\n/g, '<br>')}</p>`;
+
+            messageDiv.appendChild(iconDiv);
+            messageDiv.appendChild(textDiv);
+
+            chatbox.appendChild(messageDiv);
+            chatbox.scrollTop = chatbox.scrollHeight;
+        }
+
+        // Función para enviar mensaje al servidor
+        async function sendMessage(message) {
+            // Mostrar indicador de escritura
+            typingIndicator.classList.remove('hidden');
+
+            try {
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                const formData = new FormData();
+                formData.append('message', message);
+                formData.append('provider', currentProvider);
+
+                const response = await fetch('{% url "chatbot_api" %}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrfToken
+                    },
+                    body: formData
+                });
+
+                const data = await response.json();
+                return data.response;
+            } catch (error) {
+                console.error('Error:', error);
+                return 'Lo siento, ha ocurrido un error al procesar tu mensaje.';
+            } finally {
+                // Ocultar indicador de escritura
+                typingIndicator.classList.add('hidden');
+            }
+        }
+
+        // Función para cambiar de proveedor
+        async function sendProviderChangeRequest() {
+            try {
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                const formData = new FormData();
+                formData.append('message', 'reset');
+                formData.append('provider', currentProvider);
+                formData.append('change_provider', 'true');
+
+                const response = await fetch('{% url "chatbot_api" %}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrfToken
+                    },
+                    body: formData
+                });
+
+                const data = await response.json();
+                return data.response;
+            } catch (error) {
+                console.error('Error:', error);
+                return 'Error al cambiar el proveedor.';
+            }
+        }
+
+        // Manejar el envío del formulario
+        async function handleSend() {
+            const message = userMessageInput.value.trim();
+            if (!message) return;
+
+            // Añadir mensaje del usuario al chat
+            addMessage('Tú', message, true);
+
+            // Limpiar el input
+            userMessageInput.value = '';
+
+            // Enviar mensaje al servidor y mostrar respuesta
+            const botResponse = await sendMessage(message);
+            addMessage('Asistente', botResponse);
+        }
+
+        // Event listeners
+        sendButton.addEventListener('click', handleSend);
+
+        userMessageInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                handleSend();
+            }
+        });
+
+        resetButton.addEventListener('click', async function () {
+            const confirmation = confirm('¿Estás seguro de que deseas reiniciar la conversación?');
+            if (confirmation) {
+                const response = await sendMessage('reset');
+                chatbox.innerHTML = '';
+                addMessage('Asistente', '¡Hola! Soy tu asistente médico virtual. ¿En qué puedo ayudarte hoy?');
+            }
+        });
+
+        // Manejar las preguntas frecuentes
+        faqButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const question = this.textContent.trim();
+                addMessage('Tú', question, true);
+
+                // Enviar la pregunta al servidor
+                sendMessage(question).then(response => {
+                    addMessage('Asistente', response);
+                });
+            });
+        });
+    });
+</script>
+
+{% csrf_token %}
+{% endblock %}

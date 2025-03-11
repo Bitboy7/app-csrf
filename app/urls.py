@@ -17,6 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from clinicas import views
+from ia import views as ia_views
 from django.contrib.auth.views import LogoutView
 from django.conf import settings
 from django.conf.urls.static import static
@@ -43,6 +44,12 @@ urlpatterns = [
     path('paciente/<int:paciente_id>/historial/add/', views.historial_create, name='historial_create'),
     path('paciente/<int:paciente_id>/historial/pdf/', views.imprimir_historial, name='imprimir_historial'),
     path('paciente/editar/<int:historialmedico_id>/historial/', views.historial_edit, name='historial_edit'),
+    # chatbot
+    path('chatbot/', ia_views.chatbot_view, name='chatbot'),
+    path('chatbot/history/', ia_views.chat_history, name='chat_history'),
+    path('chatbot/delete/<int:chat_id>/', ia_views.delete_chat, name='delete_chat'),
+    path('chatbot/delete-all/', ia_views.delete_all_chats, name='delete_all_chats'),
+    path('api/chatbot/', ia_views.chatbot_api, name='chatbot_api'),
 
 ]
 

@@ -5,6 +5,8 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 # clinicas/models.py
 from .models import Consulta, Paciente, Doctor, HistorialMedico
@@ -14,9 +16,11 @@ from django.contrib.auth import logout
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.utils import timezone
+# PDF
+from io import BytesIO
 from weasyprint import HTML
 from weasyprint.text.fonts import FontConfiguration
-from io import BytesIO
+
 
 @login_required
 def index(request):
@@ -299,3 +303,4 @@ def historial_edit(request, historialmedico_id):
         'form': form,
         'paciente': paciente 
          })
+
