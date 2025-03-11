@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}Añadir Historial Médico{% endblock %}
+
+{% block content %}
+<div class="flex justify-center items-center py-8">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-2xl">
+        <h1 class="text-2xl font-bold text-center text-blue-600 mb-6">
+            <i class="fas fa-notes-medical"></i> Añadir historial médico para <span class="text-green-600 font-semibold">{{ paciente.nombre }} {{ paciente.paterno}}</span>
+        </h1>
+
+        <div class="mb-4 p-3 bg-blue-50 border-l-4 border-blue-500 rounded">
+            <p class="text-blue-700">
+                <i class="fas fa-info-circle"></i> El historial médico es una parte crucial del expediente del paciente.
+                Por favor, complete la información con el mayor detalle posible.
+            </p>
+        </div>
+
+        <form method="post" enctype="multipart/form-data" class="space-y-4">
+            {% csrf_token %}
+
+            {% if form.errors %}
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+                <ul>
+                    {% for field, errors in form.errors.items %}
+                    {% for error in errors %}
+                    <li>{{ error }}</li>
+                    {% endfor %}
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <div class="mb-4">
+                <label for="{{ form.descripcion.id_for_label }}" class="block text-gray-700 font-bold mb-2">
+                    <i class="fas fa-clipboard-list text-blue-500"></i> Descripción
+                </label>
+                {{ form.descripcion }}
+                <p class="text-gray-500 text-xs mt-1">Detalle los síntomas, observaciones o diagnóstico del paciente.
+                </p>
+            </div>
+
+            <div class="mb-4">
+                <label for="{{ form.tratamiento.id_for_label }}" class="block text-gray-700 font-bold mb-2">
+                    <i class="fas fa-pills text-green-500"></i> Tratamiento
+                </label>
+                {{ form.tratamiento }}
+                <p class="text-gray-500 text-xs mt-1">Indique los medicamentos, dosis y duración del tratamiento
+                    recomendado.</p>
+            </div>
+
+            <div class="mb-4">
+                <label for="{{ form.notas.id_for_label }}" class="block text-gray-700 font-bold mb-2">
+                    <i class="fas fa-sticky-note text-yellow-500"></i> Notas Adicionales
+                </label>
+                {{ form.notas }}
+                <p class="text-gray-500 text-xs mt-1">Agregue información complementaria, recomendaciones o seguimiento.
+                </p>
+            </div>
+
+            <div class="mb-4">
+                <label for="{{ form.archivos.id_for_label }}" class="block text-gray-700 font-bold mb-2">
+                    <i class="fas fa-file-medical text-red-500"></i> Archivos (opcional)
+                </label>
+                {{ form.archivos }}
+                <p class="text-gray-500 text-xs mt-1">Adjunte resultados de análisis, radiografías u otros documentos
+                    relevantes.</p>
+            </div>
+
+            <div class="flex justify-between mt-6">
+                <a href="{% url 'paciente_detalle' paciente.id %}"
+                    class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+
+                <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600">
+                    <i class="fas fa-save"></i> Guardar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

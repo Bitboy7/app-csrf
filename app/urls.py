@@ -39,6 +39,8 @@ urlpatterns = [
     path('doctor/borrar/<int:doctor_id>/', views.doctor_delete, name='doctor_delete'),
     path('paciente/editar/<int:paciente_id>/', views.paciente_edit, name='paciente_edit'),
     path('paciente/borrar/<int:paciente_id>/', views.paciente_delete, name='paciente_delete'),
+    path('paciente/<int:paciente_id>/', views.paciente_detalle, name='paciente_detalle'),
+    path('paciente/<int:paciente_id>/historial/add/', views.historial_create, name='historial_create'),
 ]
 
 # Servir archivos media durante el desarrollo

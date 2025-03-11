@@ -31,6 +31,11 @@
                 </div>
 
                 <div class="mb-4">
+                    <label for="{{ form.apellido.id_for_label }}" class="block text-gray-700 font-bold mb-2">Apellido</label>
+                    {{ form.apellido }}
+                </div>
+
+                <div class="mb-4">
                     <label for="{{ form.especialidad.id_for_label }}" class="block text-gray-700 font-bold mb-2">Especialidad</label>
                     {{ form.especialidad }}
                 </div>
@@ -39,15 +44,33 @@
                     <label for="{{ form.telefono.id_for_label }}" class="block text-gray-700 font-bold mb-2">Teléfono</label>
                     {{ form.telefono }}
                 </div>
+                
+                <div class="mb-4">
+                    <label for="{{ form.correo.id_for_label }}" class="block text-gray-700 font-bold mb-2">Correo</label>
+                    {{ form.correo }}
+                </div>
+                
+                <div class="mb-4">
+                    <label for="{{ form.nacimiento.id_for_label }}" class="block text-gray-700 font-bold mb-2">Fecha de Nacimiento</label>
+                    {{ form.nacimiento }}
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            var nacimientoField = document.getElementById('{{ form.nacimiento.id_for_label }}');
+                            if (nacimientoField && !nacimientoField.value) {
+                                nacimientoField.value = '1900-01-01';
+                            }
+                        });
+                    </script>
+                </div>
             </div>
 
             <div class="flex justify-between mt-6">
                 <a href="{% url 'index' %}" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
-                    Cancelar
+                <i class="fas fa-arrow-left"></i> 
                 </a>
             
                 <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600">
-                    {% if form.instance.id %}Actualizar{% else %}Crear Doctor{% endif %}
+                <i class="fas fa-save"></i>    {% if form.instance.id %}Actualizar{% else %}Guardar{% endif %}
                 </button>
             </div>
         </form>

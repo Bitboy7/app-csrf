@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm, SetPasswordForm
-from .models import Paciente, Usuario, Consulta, Doctor
+from .models import Paciente, Usuario, Consulta, Doctor, HistorialMedico
 
 class ConsultaForm(forms.ModelForm):
     class Meta:
@@ -102,7 +102,6 @@ class CambioPasswordForm(SetPasswordForm):
             'placeholder': 'Confirmar nueva contraseña'
         })
         
-        
 class PerfilForm(forms.ModelForm):
     first_name = forms.CharField(
         required=False,
@@ -136,25 +135,36 @@ class PerfilForm(forms.ModelForm):
     class Meta:
         model = Usuario
         fields = ['first_name', 'last_name', 'email', 'telefono', 'direccion', 'fecha_nacimiento', 'foto_perfil']
-        
-        
+ 
 class DoctorForm(forms.ModelForm):
-    nombre = forms.CharField(
-        required=False,
-        widget=forms.TextInput(attrs={'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline', 'placeholder': 'Nombre'})
-    )
-    especialidad = forms.CharField(
-        required=False,
-        widget=forms.TextInput(attrs={'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline', 'placeholder': 'Especialidad'})
-    )
-    telefono = forms.CharField(
-        required=False,
-        widget=forms.TextInput(attrs={'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline', 'placeholder': 'Teléfono'})
-    )
+        nombre = forms.CharField(
+                required=True,
+                widget=forms.TextInput(attrs={'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline', 'placeholder': 'Nombre'})
+        )
+        apellido = forms.CharField(
+                required=False,
+                widget=forms.TextInput(attrs={'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline', 'placeholder': 'Apellido'})
+        )
+        especialidad = forms.CharField(
+                required=True,
+                widget=forms.TextInput(attrs={'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline', 'placeholder': 'Especialidad'})
+        )
+        telefono = forms.CharField(
+                required=False,
+                widget=forms.TextInput(attrs={'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline', 'placeholder': 'Teléfono'})
+        )
+        correo = forms.EmailField(
+                required=False,
+                widget=forms.EmailInput(attrs={'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline', 'placeholder': 'Correo electrónico'})
+        )
+        nacimiento = forms.DateField(
+                required=False,
+                widget=forms.DateInput(attrs={'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline', 'type': 'date'})
+        )
 
-    class Meta:
-        model = Doctor
-        fields = ['nombre', 'especialidad', 'telefono']
+        class Meta:
+            model = Doctor
+            fields = ['nombre', 'apellido', 'especialidad', 'telefono', 'correo', 'nacimiento']
         
 class PacienteForm(forms.ModelForm):
     nombre = forms.CharField(
@@ -189,3 +199,24 @@ class PacienteForm(forms.ModelForm):
     class Meta:
         model = Paciente
         fields = ['nombre', 'paterno', 'materno', 'telefono', 'direccion', 'fecha_nacimiento', 'genero']
+
+class HistorialMedicoForm(forms.ModelForm):
+    descripcion = forms.CharField(
+        widget=forms.Textarea(attrs={'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline', 'rows': 4})
+    )
+    tratamiento = forms.CharField(
+        required=False,
+        widget=forms.Textarea(attrs={'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline', 'rows': 3})
+    )
+    notas = forms.CharField(
+        required=False,
+        widget=forms.Textarea(attrs={'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline', 'rows': 2})
+    )
+    archivos = forms.FileField(
+        required=False,
+        widget=forms.ClearableFileInput(attrs={'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'})
+    )
+
+    class Meta:
+        model = HistorialMedico
+        fields = ['descripcion', 'tratamiento', 'notas', 'archivos']

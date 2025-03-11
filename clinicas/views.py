@@ -19,7 +19,7 @@ def index(request):
     doctores = Doctor.objects.all()
     pacientes = Paciente.objects.all()
     form = ConsultaForm()  # Crear una instancia del formulario
-    return render(request, 'index.html', {'consultas': consultas, 'form': form, 'doctores': doctores, 'pacientes': pacientes})  # Pasar el formulario al contexto
+    return render(request, 'usuario/index.html', {'consultas': consultas, 'form': form, 'doctores': doctores, 'pacientes': pacientes})  # Pasar el formulario al contexto
 
 # Login, registro, logout
 def user_login(request):
@@ -42,7 +42,7 @@ def user_login(request):
             messages.error(request, 'Nombre de usuario o contraseña incorrectos.')
     else:
         form = LoginForm()
-    return render(request, 'login.html', {'form': form})
+    return render(request, 'auth/login.html', {'form': form})
 
 def user_register(request):
     if request.user.is_authenticated:
@@ -64,7 +64,7 @@ def user_register(request):
                 return redirect('index')
     else:
         form = RegistroForm()
-    return render(request, 'register.html', {'form': form})
+    return render(request, 'auth/register.html', {'form': form})
 
 @login_required
 def user_logout(request):
@@ -87,7 +87,7 @@ def cambiar_password(request):
             messages.error(request, 'Por favor corrige los errores.')
     else:
         form = CambioPasswordForm(request.user)
-    return render(request, 'cambiar_pass.html', {'form': form})
+    return render(request, 'usuario/cambiar_pass.html', {'form': form})
 
 @login_required
 def perfil_usuario(request):
@@ -100,7 +100,7 @@ def perfil_usuario(request):
     else:
         form = PerfilForm(instance=request.user)
     
-    return render(request, 'perfil.html', {'form': form})
+    return render(request, 'usuario/perfil.html', {'form': form})
 
 # Consultas
 @login_required
@@ -113,7 +113,7 @@ def consulta_create(request):
             return redirect('index')
     else:
         form = ConsultaForm()
-    return render(request, 'consulta_form.html', {'form': form})
+    return render(request, 'forms/consulta_form.html', {'form': form})
 
 @login_required
 def consulta_edit(request, consulta_id):
@@ -126,7 +126,7 @@ def consulta_edit(request, consulta_id):
             return redirect('index')
     else:
         form = ConsultaForm(instance=consulta)
-    return render(request, 'consulta_form.html', {'form': form})
+    return render(request, 'forms/consulta_form.html', {'form': form})
 
 @login_required
 def consulta_delete(request, consulta_id):
@@ -146,7 +146,7 @@ def doctor_create(request):
             return redirect('index')
     else:
         form = DoctorForm()
-    return render(request, 'doctor_form.html', {'form': form})
+    return render(request, 'forms/doctor_form.html', {'form': form})
 
 @login_required
 def doctor_edit(request, doctor_id):
@@ -159,7 +159,7 @@ def doctor_edit(request, doctor_id):
             return redirect('index')
     else:
         form = DoctorForm(instance=doctor)
-    return render(request, 'doctor_form.html', {'form': form})
+    return render(request, 'forms/doctor_form.html', {'form': form})
 
 @login_required
 def doctor_delete(request, doctor_id):
@@ -179,7 +179,7 @@ def paciente_create(request):
             return redirect('index')
     else:
         form = PacienteForm()
-    return render(request, 'paciente_form.html', {'form': form})
+    return render(request, 'forms/paciente_form.html', {'form': form})
 
 @login_required
 def paciente_edit(request, paciente_id):
@@ -192,7 +192,7 @@ def paciente_edit(request, paciente_id):
             return redirect('index')
     else:
         form = PacienteForm(instance=paciente)
-    return render(request, 'paciente_form.html', {'form': form})
+    return render(request, 'forms/paciente_form.html', {'form': form})
 
 @login_required
 def paciente_delete(request, paciente_id):
@@ -201,3 +201,38 @@ def paciente_delete(request, paciente_id):
         paciente.delete()
         messages.success(request, 'Paciente eliminado correctamente.')
     return redirect('index')
+
+from django.shortcuts import get_object_or_404
+
+@login_required
+def paciente_detalle(request, paciente_id):
+    paciente = get_object_or_404(Paciente, id=paciente_id)
+    historiales = paciente.historiales.all()
+    consultas = Consulta.objects.filter(paciente=paciente)
+    
+    return render(request, 'paciente/paciente_detalle.html', {
+        'paciente': paciente,
+        'historiales': historiales,
+        'consultas': consultas
+    })
+
+@login_required
+def historial_create(request, paciente_id):
+    paciente = get_object_or_404(Paciente, id=paciente_id)
+    
+    if request.method == 'POST':
+        form = HistorialMedicoForm(request.POST, request.FILES)
+        if form.is_valid():
+            historial = form.save(commit=False)
+            historial.paciente = paciente
+            historial.created_by = request.user
+            historial.save()
+            messages.success(request, 'Historial médico añadido correctamente.')
+            return redirect('paciente_detalle', paciente_id=paciente.id)
+    else:
+        form = HistorialMedicoForm()
+        
+    return render(request, 'forms/historial_form.html', {
+        'form': form,
+        'paciente': paciente
+    })

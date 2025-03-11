@@ -30,12 +30,15 @@ class Usuario(AbstractUser):
 
     class Meta:
         verbose_name = 'Usuario'
-        verbose_name_plural = 'Usuarios'
+        verbose_name_plural = 'Usuarios' 
         
 class Doctor(models.Model):
     nombre = models.CharField(max_length=100)
+    apellido = models.CharField(max_length=100, default='', blank=True)
     especialidad = models.CharField(max_length=100)
-    telefono = models.CharField(max_length=15)
+    telefono = models.CharField(max_length=15, blank=True, null=True)
+    correo = models.EmailField(blank=True, null=True)
+    nacimiento = models.DateField(default='2000-01-01', blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -66,3 +69,22 @@ class Consulta(models.Model):
     
     def __str__(self):
         return f'{self.fecha} - {self.doctor} - {self.paciente}'
+    
+class HistorialMedico(models.Model):
+    paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE, related_name='historiales')
+    fecha = models.DateField(auto_now_add=True)
+    descripcion = models.TextField(blank=True, null=True)
+    tratamiento = models.TextField(blank=True)
+    notas = models.TextField(blank=True, null=True)
+    archivos = models.FileField(upload_to='historiales/', null=True, blank=True)
+    created_by = models.ForeignKey(Usuario, on_delete=models.SET_NULL, null=True, related_name='historiales_creados')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f'Historial de {self.paciente} - {self.fecha}'
+    
+    class Meta:
+        ordering = ['-fecha']
+        verbose_name = 'Historial Médico'
+        verbose_name_plural = 'Historiales Médicos'

@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+
+{% block title %}Perfil de {{ paciente.nombre }}{% endblock %}
+
+{% block content %}
+<div class="bg-white p-6 rounded-lg shadow-lg mb-6">
+    <div class="flex justify-between items-center mb-4">
+        <h1 class="text-2xl font-bold text-blue-600"><i class="fas fa-user-circle mr-2"></i>Información del paciente
+        </h1>
+        <a href="{% url 'historial_create' paciente.id %}"
+            class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+            <i class="fas fa-plus-circle"></i> Añadir historial
+        </a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+            <p class="font-bold"><i class="fas fa-user mr-2"></i>Nombre:</p>
+            <p>{{ paciente.nombre }} {{ paciente.paterno }} {{ paciente.materno }}</p>
+        </div>
+        <div>
+            <p class="font-bold"><i class="fas fa-venus-mars mr-2"></i>Género:</p>
+            <p>{{ paciente.get_genero_display }}</p>
+        </div>
+        <div>
+            <p class="font-bold"><i class="fas fa-birthday-cake mr-2"></i>Fecha de Nacimiento:</p>
+            <p>{{ paciente.fecha_nacimiento }}</p>
+        </div>
+        <div>
+            <p class="font-bold"><i class="fas fa-phone mr-2"></i>Teléfono:</p>
+            <p>{{ paciente.telefono }}</p>
+        </div>
+    </div>
+</div>
+
+<!-- Historiales médicos -->
+<div class="bg-white p-6 rounded-lg shadow-lg mb-6">
+    <h2 class="text-xl font-bold text-blue-600 mb-4"><i class="fas fa-notes-medical mr-2"></i>Historial Médico</h2>
+
+    {% if historiales %}
+    <div class="space-y-4">
+        {% for historial in historiales %}
+        <div class="border-l-4 border-blue-500 pl-4 py-2">
+            <div class="flex justify-between items-center cursor-pointer historial-header"
+                data-target="historial-{{ historial.id }}">
+                <div class="flex items-center">
+                    <i class="fas fa-chevron-right text-blue-500 mr-2 toggle-icon"></i>
+                    <p class="font-bold"><i class="far fa-calendar-alt mr-2"></i>{{ historial.fecha|date:"d/m/Y" }}</p>
+                </div>
+                <p class="text-gray-600"><i class="fas fa-user-md mr-1"></i>Por: {{ historial.created_by.username }}</p>
+            </div>
+            <div id="historial-{{ historial.id }}" class="historial-content mt-2 hidden">
+                <p class="font-semibold mt-2"><i class="fas fa-info-circle mr-2"></i>Descripción:</p>
+                <p>{{ historial.descripcion }}</p>
+
+                {% if historial.tratamiento %}
+                <p class="font-semibold mt-2"><i class="fas fa-pills mr-2"></i>Tratamiento:</p>
+                <p>{{ historial.tratamiento }}</p>
+                {% endif %}
+
+                {% if historial.notas %}
+                <p class="font-semibold mt-2"><i class="fas fa-sticky-note mr-2"></i>Notas:</p>
+                <p>{{ historial.notas }}</p>
+                {% endif %}
+
+                {% if historial.archivos %}
+                <p class="font-semibold mt-2"><i class="fas fa-paperclip mr-2"></i>Archivos:</p>
+                <a href="{{ historial.archivos.url }}" class="text-blue-500 hover:underline" target="_blank">
+                    <i class="fas fa-file-download"></i> Ver archivo adjunto
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-gray-600"><i class="fas fa-info-circle mr-2"></i>No hay registros en el historial médico de este
+        paciente.</p>
+    {% endif %}
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const headers = document.querySelectorAll('.historial-header');
+
+        headers.forEach(header => {
+            header.addEventListener('click', function () {
+                const targetId = this.getAttribute('data-target');
+                const content = document.getElementById(targetId);
+                const icon = this.querySelector('.toggle-icon');
+
+                // Toggle content visibility
+                content.classList.toggle('hidden');
+
+                // Rotate icon when expanded
+                if (content.classList.contains('hidden')) {
+                    icon.classList.remove('fa-chevron-down');
+                    icon.classList.add('fa-chevron-right');
+                } else {
+                    icon.classList.remove('fa-chevron-right');
+                    icon.classList.add('fa-chevron-down');
+                }
+            });
+        });
+    });
+</script>
+
+<!-- Consultas del paciente -->
+<div class="bg-white p-6 rounded-lg shadow-lg">
+    <h2 class="text-xl font-bold text-blue-600 mb-4"><i class="fas fa-stethoscope mr-2"></i>Consultas</h2>
+
+    {% if consultas %}
+    <div class="overflow-x-auto">
+        <table class="min-w-full bg-white">
+            <thead>
+                <tr>
+                    <th class="py-2 px-4 border-b border-gray-200 bg-gray-50 text-left"><i
+                            class="far fa-calendar-alt mr-1"></i>Fecha</th>
+                    <th class="py-2 px-4 border-b border-gray-200 bg-gray-50 text-left"><i
+                            class="fas fa-user-md mr-1"></i>Doctor</th>
+                    <th class="py-2 px-4 border-b border-gray-200 bg-gray-50 text-left"><i
+                            class="fas fa-clipboard mr-1"></i>Motivo</th>
+                    <th class="py-2 px-4 border-b border-gray-200 bg-gray-50 text-left"><i
+                            class="fas fa-heartbeat mr-1"></i>Diagnóstico</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for consulta in consultas %}
+                <tr>
+                    <td class="py-2 px-4 border-b border-gray-200">{{ consulta.fecha|date:"d/m/Y H:i" }}</td>
+                    <td class="py-2 px-4 border-b border-gray-200">{{ consulta.doctor.nombre }}</td>
+                    <td class="py-2 px-4 border-b border-gray-200">{{ consulta.motivo }}</td>
+                    <td class="py-2 px-4 border-b border-gray-200">{{ consulta.diagnostico }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="text-gray-600"><i class="fas fa-info-circle mr-2"></i>No hay consultas registradas para este paciente.</p>
+    {% endif %}
+</div>
+
+<div class="mt-6">
+    <a href="{% url 'index' %}" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
+        <i class="fas fa-arrow-left"></i> Volver
+    </a>
+</div>
+{% endblock %}

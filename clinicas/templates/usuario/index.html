@@ -10,7 +10,7 @@
   Gestiona tus doctores, pacientes y consultas de manera eficiente.
 </p>
 
-<div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+<div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-5">
   <div class="bg-white p-6 rounded-lg shadow-lg">
     <h2 class="text-2xl font-bold mb-2 text-gray-800">Doctores</h2>
     <ul>
@@ -31,24 +31,26 @@
       {% endfor %}
     </ul>
   </div>
+
   <div class="bg-white p-6 rounded-lg shadow-lg">
     <h2 class="text-2xl font-bold mb-2 text-gray-800">Pacientes</h2>
     <ul>
       {% for paciente in pacientes %}
-        <li class="mb-2 p-3 border-b border-gray-200 hover:bg-blue-50 transition-all duration-200 rounded-md flex items-center justify-between">
-          <span class="font-semibold text-gray-800 hover:text-blue-600">{{ paciente.nombre }}</span>
-          <span class="font-semibold text-gray-800 hover:text-blue-600">{{ paciente.paterno }}</span>
-          <span class="text-gray-600 hover:text-gray-800 transition-colors">{{ paciente.materno }}</span> -
-          <span class="text-gray-600 hover:text-gray-800 transition-colors">{{ paciente.genero }}</span>
-          <span>
+      <li
+        class="mb-2 p-3 border-b border-gray-200 hover:bg-blue-50 transition-all duration-200 rounded-md flex items-center justify-between">
+        <a href="{% url 'paciente_detalle' paciente.id %}" class="font-semibold text-gray-800 hover:text-blue-600">
+          {{ paciente.nombre }} {{ paciente.paterno }} {{ paciente.materno }}
+        </a>
+        <span class="text-gray-600 hover:text-gray-800 transition-colors">{{ paciente.genero }}</span>
+        <span>
             <a href="{% url 'paciente_edit' paciente.id %}" class="text-blue-600 hover:text-blue-800 p-2">
-              <i class="fas fa-edit"></i>
-            </a> 
-            <a href="javascript:void(0)" onclick="mostrarModalEliminar('{{ paciente.id }}', 'paciente', '{{ paciente.nombre }}', '{{ paciente.paterno }}', '{{ paciente.materno }}')" class="text-red-600 hover:text-red-800 p-2">
-              <i class="fas fa-trash-alt"></i>
+            <i class="fas fa-edit"></i>
             </a>
-          </span>
-        </li>
+            <a href="javascript:void(0)" onclick="mostrarModalEliminar('{{ paciente.id }}', 'paciente', '{{ paciente.nombre }}', '{{ paciente.paterno }}', '{{ paciente.materno }}')" class="text-red-600 hover:text-red-800 p-2">
+            <i class="fas fa-trash-alt"></i>
+            </a>
+        </span>
+      </li>
       {% endfor %}
     </ul>
   </div>
