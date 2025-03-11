@@ -2,6 +2,8 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_protect
 from django.http import JsonResponse
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
 # AI
 from .ia_agent import get_medical_response, reset_assistant, change_provider
 from .models import ChatbotLog
@@ -20,6 +22,11 @@ def chatbot_api(request):
         provider = request.POST.get('provider', None)
         change_provider_flag = request.POST.get('change_provider', False)
         
+        # Obtener el nombre del usuario
+        user_name = None
+        if request.user.is_authenticated:
+            user_name = request.user.first_name or request.user.username
+        
         if change_provider_flag and provider:
             # Cambiar el proveedor y reiniciar
             response = change_provider(provider)
@@ -28,7 +35,7 @@ def chatbot_api(request):
         elif message.lower() == 'reset':
             response = reset_assistant(provider)
         else:
-            response = get_medical_response(message, provider)
+            response = get_medical_response(message, provider, user_name)
         
         # Guardar la llamada en la base de datos solo si la respuesta es válida
         if response and response != "Lo siento, tuve un problema para procesar tu pregunta.":
@@ -42,9 +49,6 @@ def chatbot_api(request):
         return JsonResponse({'response': response})
     
     return JsonResponse({'error': 'Método no permitido'}, status=405)
-
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib import messages
 
 @login_required
 def chat_history(request):

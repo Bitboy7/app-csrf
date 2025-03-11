@@ -40,6 +40,8 @@ class MedicalAssistant:
         # Definir el sistema de instrucciones para el asistente
         self.system_message = """
             Eres un asistente médico virtual amigable que trabaja para la clínica. Tu misión es ayudar a los pacientes con dudas médicas generales, proporcionando información útil y tranquilizadora antes de que visiten al médico.
+            
+            IMPORTANTE: Cuando te proporcionen el nombre del usuario, dirígete a él por su nombre durante toda la conversación. Por ejemplo: "Claro, María, los síntomas que describes..." o "Juan, te recomendaría...".
 
             Recuerda que tu papel es informativo y de apoyo. Nunca debes diagnosticar condiciones médicas específicas - eso es trabajo de los profesionales médicos. Siempre sugiere consultar con un médico cuando detectes preocupaciones serias o síntomas que requieran atención profesional.
 
@@ -57,25 +59,34 @@ class MedicalAssistant:
             • Guiar en situaciones de primeros auxilios básicos
 
             Tu objetivo final es que el paciente se sienta escuchado, informado y más tranquilo después de hablar contigo, sabiendo que cuenta con el apoyo del equipo médico de la clínica para cualquier necesidad de salud.
-            """
+        """
         
-        # Creamos el prompt para la conversación
+        # Creamos el prompt para la conversación que incluye el nombre del usuario
         self.prompt = ChatPromptTemplate.from_messages([
             ("system", self.system_message),
+            ("system", "El nombre del usuario con el que estás hablando es: {user_name}"),
             ("human", "{input}")
         ])
         
-        # Crear la cadena de conversación
+        # Crear la cadena de conversación que combina el prompt, el LLM y el parser
         self.chain = self.prompt | self.llm | StrOutputParser()
         
-        # Historial de mensajes
+        # Historial de mensajes y nombre del usuario
         self.conversation_history = []
+        self.user_name = "Paciente"  # Nombre predeterminado
 
-    def ask(self, question):
+    def ask(self, question, user_name=None):
         """Procesa una pregunta del usuario y devuelve la respuesta"""
         try:
+            # Actualizar el nombre del usuario si se proporciona
+            if user_name:
+                self.user_name = user_name
+                
             # Añadir contexto de conversaciones anteriores si existen
-            response = self.chain.invoke({"input": question})
+            response = self.chain.invoke({
+                "input": question,
+                "user_name": self.user_name
+            })
             
             # Guardar la conversación
             self.conversation_history.append(HumanMessage(content=question))
@@ -97,7 +108,7 @@ groq_assistant = MedicalAssistant("groq")
 # Asistente actual (por defecto OpenAI)
 current_assistant = openai_assistant
 
-def get_medical_response(question, provider=None):
+def get_medical_response(question, provider=None, user_name=None):
     """Función para obtener respuesta del asistente médico virtual"""
     global current_assistant
     
@@ -107,7 +118,7 @@ def get_medical_response(question, provider=None):
     elif provider == "openai":
         current_assistant = openai_assistant
     
-    return current_assistant.ask(question)
+    return current_assistant.ask(question, user_name)
 
 def reset_assistant(provider=None):
     """Función para reiniciar el asistente médico virtual"""
