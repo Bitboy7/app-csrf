@@ -11,7 +11,8 @@ dependencies = [
     "django (>=5.1.6,<6.0.0)",
     "mysqlclient (>=2.2.7,<3.0.0)",
     "python-dotenv (>=1.0.1,<2.0.0)",
-    "pillow (>=11.1.0,<12.0.0)"
+    "pillow (>=11.1.0,<12.0.0)",
+    "weasyprint (>=64.1,<65.0)",
 ]
 
 [build-system]

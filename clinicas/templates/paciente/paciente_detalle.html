@@ -5,12 +5,17 @@
 {% block content %}
 <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
     <div class="flex justify-between items-center mb-4">
-        <h1 class="text-2xl font-bold text-blue-600"><i class="fas fa-user-circle mr-2"></i>Información del paciente
-        </h1>
-        <a href="{% url 'historial_create' paciente.id %}"
-            class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
-            <i class="fas fa-plus-circle"></i> Añadir historial
-        </a>
+        <h1 class="text-2xl font-bold text-blue-600"><i class="fas fa-user-circle mr-2"></i>Información del paciente</h1>
+        <div class="flex space-x-2">
+            <a href="{% url 'imprimir_historial' paciente.id %}"
+                class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                <i class="fas fa-print"></i> Imprimir Historial
+            </a>
+            <a href="{% url 'historial_create' paciente.id %}"
+                class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                <i class="fas fa-plus-circle"></i> Añadir Historial
+            </a>
+        </div>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">

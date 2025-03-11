@@ -9,6 +9,7 @@ Este proyecto es un sistema web para la gestión de clínicas médicas que permi
 - Perfiles de usuario personalizables
 - Administración de doctores y pacientes
 - Programación y seguimiento de consultas médicas
+- Generación de historiales médicos en PDF
 - Interfaz responsiva con Tailwind CSS
 
 ## Requisitos previos
@@ -17,6 +18,7 @@ Este proyecto es un sistema web para la gestión de clínicas médicas que permi
 - MySQL 8.0 o superior
 - Poetry (gestor de dependencias para Python)
 - Navegador web moderno
+- GTK+ para WeasyPrint (ver instrucciones específicas abajo)
 
 ## Instalación
 
@@ -59,6 +61,16 @@ Este proyecto es un sistema web para la gestión de clínicas médicas que permi
    ```bash
    poetry run python manage.py runserver
    ```
+
+## Instalación de WeasyPrint
+
+WeasyPrint requiere bibliotecas del sistema adicionales para funcionar correctamente:
+
+### Instalar GTK+ para Windows
+
+Descarga e instala el paquete GTK para Windows desde aquí: https://github.com/tschoonj/GTK-for-Windows-Runtime-Environment-Installer/releases
+
+Después de instalar, asegúrate de agregar la carpeta bin de GTK a tu variable de entorno PATH
 
 ## Uso
 
