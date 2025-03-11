@@ -7,7 +7,7 @@ from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 # clinicas/models.py
-from .models import Consulta, Paciente, Doctor
+from .models import Consulta, Paciente, Doctor, HistorialMedico
 #clinicas/forms.py
 from .forms import *
 from django.contrib.auth import logout
@@ -275,3 +275,27 @@ def imprimir_historial(request, paciente_id):
     response['Content-Disposition'] = f'attachment; filename="{filename}"'
     
     return response
+
+@login_required
+def historial_edit(request, historialmedico_id):
+    # Obtén el historial médico por ID
+    historial = get_object_or_404(HistorialMedico, id=historialmedico_id)
+    paciente = historial.paciente
+
+    # Si el formulario se envía por POST
+    if request.method == 'POST':
+        form = HistorialMedicoForm(request.POST, instance=historial)
+        if form.is_valid():
+            form.save()
+            # Redirige al detalle del paciente asociado
+            messages.success(request, 'Historial Medico actualizado correctamente.')
+            return redirect('paciente_detalle', paciente_id=historial.paciente.id)
+
+    else:
+        form = HistorialMedicoForm(instance=historial)
+    
+    # Renderiza la plantilla con el formulario
+    return render(request, 'forms/historial_form.html', {
+        'form': form,
+        'paciente': paciente 
+         })
