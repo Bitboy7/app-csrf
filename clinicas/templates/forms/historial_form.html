@@ -6,7 +6,7 @@
 <div class="flex justify-center items-center py-8">
     <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-2xl">
         <h1 class="text-2xl font-bold text-center text-blue-600 mb-6">
-            <i class="fas fa-notes-medical"></i> Añadir historial médico para <span class="text-green-600 font-semibold">{{ paciente.nombre }} {{ paciente.paterno}}</span>
+            {% if form.instance.id %}Editar{% else %}Nuevo{% endif %} Historial Medico
         </h1>
 
         <div class="mb-4 p-3 bg-blue-50 border-l-4 border-blue-500 rounded">
@@ -81,8 +81,8 @@
                     <i class="fas fa-arrow-left"></i>
                 </a>
 
-                <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600">
-                    <i class="fas fa-save"></i> Guardar
+                 <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600">
+                <i class="fas fa-save"></i>  {% if form.instance.id %}Actualizar{% else %}Guardar{% endif %}
                 </button>
             </div>
         </form>
