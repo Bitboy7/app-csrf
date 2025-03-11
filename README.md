@@ -33,7 +33,7 @@ Este proyecto es un sistema web para la gestión de clínicas médicas que permi
    ```
 2. Configurar entorno virtual con Poetry
    ```bash
-   poetry install
+   poetry install --no-root
    ```
 3. Configurar archivo `.env`
 
