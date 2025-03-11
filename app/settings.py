@@ -30,7 +30,11 @@ SECRET_KEY = 'django-insecure-61y^-3f9qi=d+p2vy#p2q5+t*sn3yep%i2(ro3f1=yg^+yu4+a
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
-#CSRF_TRUSTED_ORIGINS = [os.getenv('DOMAIN'), '127.0.0.1:8000']
+CSRF_TRUSTED_ORIGINS = [
+    'http://127.0.0.1',
+    'http://localhost',
+    'https://likely-cosmic-mosquito.ngrok-free.app',
+]
 
 # Application definition
 
@@ -42,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'clinicas',
+    'ia',
 ]
 
 MIDDLEWARE = [
