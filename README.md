@@ -11,6 +11,10 @@ Este proyecto es un sistema web para la gestión de clínicas médicas que permi
 - Programación y seguimiento de consultas médicas
 - Generación de historiales médicos en PDF
 - Interfaz responsiva con Tailwind CSS
+- **Nuevo**: Asistente virtual médico con IA para responder preguntas generales de salud
+- **Nuevo**: Análisis de datos médicos para identificar patrones y proporcionar insights
+- **Nuevo**: Historial de chats con el asistente virtual, con opción de eliminar conversaciones
+- **Nuevo**: Generación de análisis médicos en PDF
 
 ## Requisitos previos
 
@@ -81,6 +85,8 @@ Después de instalar, asegúrate de agregar la carpeta bin de GTK a tu variable 
    - **Doctores**: Gestión de información médica
    - **Pacientes**: Registro y seguimiento
    - **Consultas**: Programación e historial
+   - **Asistente Virtual**: Interactúa con el asistente virtual médico para obtener información general de salud
+   - **Análisis de Datos**: Realiza análisis de datos médicos para obtener insights y patrones
 
 ## Configuración de Seguridad
 
