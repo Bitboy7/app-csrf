@@ -12,6 +12,11 @@ from .models import Consulta, Paciente, Doctor
 from .forms import *
 from django.contrib.auth import logout
 from django.shortcuts import get_object_or_404
+from django.template.loader import render_to_string
+from django.utils import timezone
+from weasyprint import HTML
+from weasyprint.text.fonts import FontConfiguration
+from io import BytesIO
 
 @login_required
 def index(request):
@@ -235,3 +240,38 @@ def historial_create(request, paciente_id):
         'form': form,
         'paciente': paciente
     })
+
+@login_required
+def imprimir_historial(request, paciente_id):
+    paciente = get_object_or_404(Paciente, id=paciente_id)
+    historiales = paciente.historiales.all()
+    consultas = Consulta.objects.filter(paciente=paciente)
+    
+    # Prepare context for the template
+    context = {
+        'paciente': paciente,
+        'historiales': historiales,
+        'consultas': consultas,
+        'fecha_impresion': timezone.now(),
+        'usuario': request.user,
+    }
+    
+    # Render the HTML template with context - CAMBIA ESTA LÍNEA
+    html_string = render_to_string('pdf/template_pdf.html', context)
+    
+    # Configure fonts
+    font_config = FontConfiguration()
+    
+    # Create PDF using WeasyPrint
+    html = HTML(string=html_string, base_url=request.build_absolute_uri('/'))
+    pdf_file = BytesIO()
+    html.write_pdf(pdf_file, font_config=font_config)
+    
+    # Prepare and return the HTTP response with PDF
+    pdf_file.seek(0)
+    filename = f"historial_medico_{paciente.nombre}_{paciente.id}.pdf"
+    
+    response = HttpResponse(pdf_file, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    
+    return response
