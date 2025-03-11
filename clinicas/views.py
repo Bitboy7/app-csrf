@@ -14,6 +14,7 @@ from .models import Consulta, Paciente, Doctor, HistorialMedico
 from .forms import *
 from django.contrib.auth import logout
 from django.shortcuts import get_object_or_404
+from django.db import models
 from django.template.loader import render_to_string
 from django.utils import timezone
 # PDF
@@ -304,3 +305,29 @@ def historial_edit(request, historialmedico_id):
         'paciente': paciente 
          })
 
+@login_required
+def search_patients_api(request):
+    query = request.GET.get('query', '')
+    
+    if query:
+        # Buscar pacientes que coincidan con el query
+        patients = Paciente.objects.filter(
+            models.Q(nombre__icontains=query) | 
+            models.Q(paterno__icontains=query) | 
+            models.Q(materno__icontains=query)
+        )[:10]  # Limitar a 10 resultados
+        
+        # Formatear resultados
+        results = []
+        for patient in patients:
+            results.append({
+                'id': patient.id,
+                'nombre': patient.nombre,
+                'paterno': patient.paterno or '',
+                'materno': patient.materno or '',
+                'fecha_nacimiento': patient.fecha_nacimiento.strftime('%Y-%m-%d')
+            })
+        
+        return JsonResponse({'patients': results})
+    
+    return JsonResponse({'patients': []})

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Análisis Médico PDF</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .header {
+            border-bottom: 2px solid #4299e1;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            color: #2c5282;
+            margin: 0;
+            font-size: 24px;
+        }
+        .header p {
+            color: #718096;
+            margin: 5px 0 0;
+            font-size: 14px;
+        }
+        .content {
+            margin-bottom: 30px;
+        }
+        .content h2 {
+            color: #2b6cb0;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 5px;
+            font-size: 18px;
+        }
+        .patient-info {
+            background-color: #f7fafc;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .analysis-content {
+            line-height: 1.6;
+        }
+        .footer {
+            margin-top: 40px;
+            padding-top: 10px;
+            border-top: 1px solid #e2e8f0;
+            font-size: 12px;
+            color: #718096;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table td, table th {
+            border: 1px solid #e2e8f0;
+            padding: 8px;
+        }
+        table th {
+            background-color: #f7fafc;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Análisis Médico - Acaclinic</h1>
+        <p>Generado el: {{ fecha_impresion|date:"d/m/Y H:i" }} por {{ usuario.get_full_name|default:usuario.username }}</p>
+    </div>
+    
+    <div class="content">
+        {% if tipo_analisis == 'paciente' %}
+            <h2>Análisis de Paciente</h2>
+            <div class="patient-info">
+                <table>
+                    <tr>
+                        <th style="width: 30%;">Nombre Completo:</th>
+                        <td>{{ patient.nombre }} {{ patient.paterno }} {{ patient.materno }}</td>
+                    </tr>
+                    <tr>
+                        <th>Género:</th>
+                        <td>{{ patient.get_genero_display }}</td>
+                    </tr>
+                    <tr>
+                        <th>Fecha de Nacimiento:</th>
+                        <td>{{ patient.fecha_nacimiento|date:"d/m/Y" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Teléfono:</th>
+                        <td>{{ patient.telefono|default:"No registrado" }}</td>
+                    </tr>
+                </table>
+            </div>
+        {% else %}
+            <h2>{{ analysis_title }}</h2>
+        {% endif %}
+        
+        <h3>Resultados del Análisis</h3>
+        <div class="analysis-content">
+            {{ analysis|linebreaksbr }}
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>Este documento es generado automáticamente por el módulo de análisis de IA de Acaclinic.</p>
+        <p>Nota: Este análisis está destinado a servir como herramienta de apoyo para el personal médico y no constituye un diagnóstico oficial.</p>
+    </div>
+</body>
+</html>

@@ -50,7 +50,13 @@ urlpatterns = [
     path('chatbot/delete/<int:chat_id>/', ia_views.delete_chat, name='delete_chat'),
     path('chatbot/delete-all/', ia_views.delete_all_chats, name='delete_all_chats'),
     path('api/chatbot/', ia_views.chatbot_api, name='chatbot_api'),
-
+    # Analisis de datos
+    path('analysis/', ia_views.data_analysis_view, name='data_analysis'),
+    path('analysis/patient/<int:patient_id>/', ia_views.patient_analysis_view, name='patient_analysis'),
+    path('api/analysis/', ia_views.general_analysis_api, name='general_analysis_api'),
+    path('api/search/patients/', views.search_patients_api, name='search_patients_api'),
+    path('analysis/patient/<int:patient_id>/pdf/', ia_views.print_patient_analysis, name='print_patient_analysis'),
+    path('analysis/general/pdf/', ia_views.print_general_analysis, name='print_general_analysis'),
 ]
 
 # Servir archivos media durante el desarrollo

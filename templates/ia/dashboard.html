@@ -1,0 +1,197 @@
+{% extends 'base.html' %}
+
+{% block title %}Análisis de Datos Médicos{% endblock %}
+
+{% block content %}
+<div class="container mx-auto py-8">
+    <h1 class="text-2xl font-bold text-blue-600 mb-6">
+        <i class="fas fa-chart-line mr-2"></i>Análisis de Datos Médicos
+    </h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Análisis generales -->
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <h2 class="text-xl font-bold text-blue-600 mb-4">Análisis Generales</h2>
+            
+            <div class="mb-4">
+                <p class="text-gray-600 mb-4">Selecciona un tipo de análisis para obtener insights sobre los datos médicos de la clínica:</p>
+                
+                <div class="space-y-4">
+                    <button id="tendencias-btn" data-type="tendencias_sintomas" class="analysis-btn w-full bg-blue-100 hover:bg-blue-200 px-4 py-3 rounded-lg text-left">
+                        <i class="fas fa-chart-bar mr-2 text-blue-600"></i>
+                        <span class="font-medium">Tendencias en síntomas reportados</span>
+                    </button>
+                    
+                    <button id="tratamientos-btn" data-type="eficacia_tratamientos" class="analysis-btn w-full bg-blue-100 hover:bg-blue-200 px-4 py-3 rounded-lg text-left">
+                        <i class="fas fa-heartbeat mr-2 text-blue-600"></i>
+                        <span class="font-medium">Eficacia de tratamientos</span>
+                    </button>
+                    
+                    <button id="demografia-btn" data-type="distribucion_genero_edad" class="analysis-btn w-full bg-blue-100 hover:bg-blue-200 px-4 py-3 rounded-lg text-left">
+                        <i class="fas fa-users mr-2 text-blue-600"></i>
+                        <span class="font-medium">Distribución demográfica</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div id="analysis-loading" class="hidden">
+                <div class="flex justify-center items-center py-4">
+                    <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"></div>
+                    <p class="ml-2">Analizando datos...</p>
+                </div>
+            </div>
+            
+            <div id="analysis-result" class="hidden">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="font-bold text-gray-700">Resultados del análisis:</h3>
+                    <button id="print-analysis" class="bg-blue-100 text-blue-700 px-3 py-1 rounded hover:bg-blue-200">
+                        <i class="fas fa-print mr-1"></i> Imprimir
+                    </button>
+                </div>
+                <div id="analysis-content" class="bg-gray-50 p-4 rounded-lg whitespace-pre-wrap text-gray-800"></div>
+            </div>
+        </div>
+        
+        <!-- Análisis por paciente -->
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <h2 class="text-xl font-bold text-blue-600 mb-4">Análisis por Paciente</h2>
+            
+            <p class="text-gray-600 mb-4">Busca un paciente para realizar un análisis detallado de su historial médico:</p>
+            
+            <div class="mb-4">
+                <input type="text" id="patient-search" class="w-full border border-gray-300 rounded-lg p-2" placeholder="Buscar paciente por nombre...">
+            </div>
+            
+            <div id="patient-results" class="max-h-80 overflow-y-auto mb-4 hidden">
+                <h3 class="font-bold mb-2 text-gray-700">Resultados:</h3>
+                <div id="patient-list" class="border border-gray-200 rounded-lg divide-y"></div>
+            </div>
+            
+            <p class="text-sm text-gray-500">
+                <i class="fas fa-info-circle mr-1"></i> 
+                El análisis por paciente utiliza técnicas avanzadas para identificar patrones en el historial médico y proporcionar insights relevantes para su atención.
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const analysisBtns = document.querySelectorAll('.analysis-btn');
+    const analysisLoading = document.getElementById('analysis-loading');
+    const analysisResult = document.getElementById('analysis-result');
+    const analysisContent = document.getElementById('analysis-content');
+    const patientSearch = document.getElementById('patient-search');
+    const patientResults = document.getElementById('patient-results');
+    const patientList = document.getElementById('patient-list');
+    const printAnalysisBtn = document.getElementById('print-analysis');
+    
+    // Variable para almacenar el tipo de análisis actual
+    let currentAnalysisType = '';
+    
+    // Botón de impresión
+    printAnalysisBtn.addEventListener('click', function() {
+        if (currentAnalysisType) {
+            window.open(`{% url 'print_general_analysis' %}?type=${currentAnalysisType}`, '_blank');
+        }
+    });
+    
+    // Análisis generales
+    analysisBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const queryType = this.getAttribute('data-type');
+            currentAnalysisType = queryType;
+            
+            // Mostrar carga
+            analysisResult.classList.add('hidden');
+            analysisLoading.classList.remove('hidden');
+            
+            // Solicitar análisis
+            fetch('{% url "general_analysis_api" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: `query_type=${queryType}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Ocultar carga
+                analysisLoading.classList.add('hidden');
+                
+                // Mostrar resultado
+                if (data.analysis) {
+                    analysisContent.textContent = data.analysis;
+                    analysisResult.classList.remove('hidden');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                analysisLoading.classList.add('hidden');
+                alert('Ha ocurrido un error al realizar el análisis.');
+            });
+        });
+    });
+    
+    // Búsqueda de pacientes
+    let searchTimeout;
+    
+    patientSearch.addEventListener('input', function() {
+        const searchValue = this.value.trim();
+        
+        // Limpiar timeout anterior
+        clearTimeout(searchTimeout);
+        
+        if (searchValue.length >= 3) {
+            // Establecer nuevo timeout (evitar múltiples solicitudes mientras el usuario escribe)
+            searchTimeout = setTimeout(() => {
+                // Realizar búsqueda
+                fetch(`/api/search/patients/?query=${searchValue}`, {
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Limpiar resultados anteriores
+                    patientList.innerHTML = '';
+                    
+                    if (data.patients && data.patients.length > 0) {
+                        // Mostrar resultados
+                        data.patients.forEach(patient => {
+                            const patientItem = document.createElement('div');
+                            patientItem.className = 'p-3 hover:bg-gray-100';
+                            patientItem.innerHTML = `
+                                <a href="/analysis/patient/${patient.id}/" class="flex justify-between items-center">
+                                    <div>
+                                        <span class="font-medium">${patient.nombre} ${patient.paterno} ${patient.materno}</span>
+                                        <p class="text-sm text-gray-500">Nacimiento: ${patient.fecha_nacimiento}</p>
+                                    </div>
+                                    <i class="fas fa-chevron-right text-gray-400"></i>
+                                </a>
+                            `;
+                            patientList.appendChild(patientItem);
+                        });
+                        
+                        patientResults.classList.remove('hidden');
+                    } else {
+                        // Mostrar no resultados
+                        const noResults = document.createElement('div');
+                        noResults.className = 'p-3 text-center text-gray-500';
+                        noResults.textContent = 'No se encontraron pacientes';
+                        patientList.appendChild(noResults);
+                        patientResults.classList.remove('hidden');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            }, 300);
+        } else if (searchValue.length === 0) {
+            patientResults.classList.add('hidden');
+        }
+    });
+});
+</script>
+{% endblock %}

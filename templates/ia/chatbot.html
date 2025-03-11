@@ -3,12 +3,10 @@
 {% block title %}Asistente Virtual Médico{% endblock %}
 
 {% block content %}
+{% load static %}
 <div class="container mx-auto py-8">
     <div class="max-w-4xl mx-auto">
         <div class="bg-white p-6 rounded-lg shadow-lg">
-            <h1 class="text-2xl font-bold text-center text-blue-600 mb-6">
-                <i class="fas fa-robot mr-2"></i>Asistente Virtual
-            </h1>
 
             <div class="bg-blue-50 border-l-4 border-blue-500 p-2 mb-2 rounded">
                 <p class="text-blue-700">
@@ -16,30 +14,39 @@
                     generales,
                     informar sobre síntomas comunes y proporcionar recomendaciones preliminares.
                     <strong>No sustituye la consulta con un profesional médico.</strong>
+                     <i class="fas fa-robot mr-2"></i>
                 </p>
             </div>
 
             <!-- Selector de proveedor de IA -->
-            <div class="flex justify-end mb-4">
-                <label for="ai-provider" class="text-sm text-gray-600 mr-2">Proveedor de IA:</label>
-                <div class="inline-flex rounded-md shadow-sm " role="group">
-                    <button type="button" id="openai-btn"
-                        class="ai-provider-btn px-4 py-2 text-sm font-medium text-gray-900 bg-blue border border-gray-200 rounded-l-lg hover:bg-blue-100 hover:text-blue-700 focus:z-10 focus:text-gray-700">
-                        <i class="fas fa-brain mr-1"></i> OpenAI
-                    </button>
-                    <button type="button" id="groq-btn"
-                        class="ai-provider-btn px-4 py-2 text-sm font-medium text-gray-900 bg-blue border border-gray-200 rounded-r-lg hover:bg-blue-100 hover:text-blue-700 focus:z-10 focus:text-gray-700">
-                        <i class="fas fa-microchip mr-1"></i> Groq
-                    </button>
+            <div class="flex justify-between mb-4">
+                <div class="flex items-center">
+                    <img id="assistant-avatar" src="{% static 'avatar.jpg' %}" alt="Dr. Aca" class="w-16 h-16 rounded-full border-2 border-blue-500 mr-2">
+                    <span class="font-medium text-blue-600">Dra. Sofia</span>
+                </div>
+                
+                <div>
+                    <label for="ai-provider" class="text-sm text-gray-600 mr-2">Proveedor de IA:</label>
+                    <div class="inline-flex rounded-md shadow-sm" role="group">
+                        <button type="button" id="openai-btn"
+                            class="ai-provider-btn px-4 py-2 text-sm font-medium text-gray-900 bg-blue border border-gray-200 rounded-l-lg hover:bg-blue-100 hover:text-blue-700 focus:z-10 focus:text-gray-700">
+                            <i class="fas fa-brain mr-1"></i> OpenAI
+                        </button>
+                        <button type="button" id="groq-btn"
+                            class="ai-provider-btn px-4 py-2 text-sm font-medium text-gray-900 bg-blue border border-gray-200 rounded-r-lg hover:bg-blue-100 hover:text-blue-700 focus:z-10 focus:text-gray-700">
+                            <i class="fas fa-microchip mr-1"></i> Groq
+                        </button>
+                    </div>
                 </div>
             </div>
 
             <div id="chatbox" class="h-96 overflow-y-auto border border-gray-300 rounded-lg p-2 mb-1">
                 <div class="flex items-start mb-4">
-                    <div class="flex-shrink-0 bg-blue-500 text-white rounded-full p-2 mr-2">
-                        <i class="fas fa-robot"></i>
+                    <div class="flex-shrink-0 mr-2">
+                        <img src="{% static 'avatar.jpg' %}" alt="Dr. Aca" class="w-10 h-10 rounded-full border-2 border-blue-500">
                     </div>
                     <div class="bg-blue-100 rounded-lg p-3 max-w-3/4">
+                        <p class="font-medium text-blue-800">Dra. Sofia</p>
                         <p>¡Hola! Soy tu asistente médico virtual. ¿En qué puedo ayudarte hoy?</p>
                         <p class="text-xs text-gray-500 mt-1">Puedes preguntarme sobre síntomas, preparación para
                             consultas o información general de salud.</p>
@@ -153,6 +160,10 @@
         const openaiBtn = document.getElementById('openai-btn');
         const groqBtn = document.getElementById('groq-btn');
 
+        // Configuración del asistente
+        const assistantName = "Dra. Sofia";
+        const assistantAvatar = "{% static 'avatar.jpg' %}";
+
         // Por defecto, usamos OpenAI (o lo que esté configurado en el servidor)
         let currentProvider = 'openai';
 
@@ -186,34 +197,84 @@
             // Reiniciar la conversación con el nuevo proveedor
             sendProviderChangeRequest().then(response => {
                 chatbox.innerHTML = '';
-                addMessage('Asistente', '¡Hola! Soy tu asistente médico virtual. ¿En qué puedo ayudarte hoy?');
+                addAssistantMessage('¡Hola! Soy tu asistente médico virtual. ¿En qué puedo ayudarte hoy?');
             });
+        }
+
+        // Función para añadir un mensaje del asistente al chatbox
+        function addAssistantMessage(message) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'flex items-start mb-4';
+
+            const avatarDiv = document.createElement('div');
+            avatarDiv.className = 'flex-shrink-0 mr-2';
+            
+            const avatarImg = document.createElement('img');
+            avatarImg.src = assistantAvatar;
+            avatarImg.alt = assistantName;
+            avatarImg.className = 'w-10 h-10 rounded-full border-2 border-blue-500';
+            avatarDiv.appendChild(avatarImg);
+
+            const textDiv = document.createElement('div');
+            textDiv.className = 'bg-blue-100 rounded-lg p-3 max-w-3/4';
+            
+            const nameP = document.createElement('p');
+            nameP.className = 'font-medium text-blue-800';
+            nameP.textContent = assistantName;
+            textDiv.appendChild(nameP);
+
+            const contentP = document.createElement('p');
+            contentP.innerHTML = message.replace(/\n/g, '<br>');
+            textDiv.appendChild(contentP);
+
+            messageDiv.appendChild(avatarDiv);
+            messageDiv.appendChild(textDiv);
+
+            chatbox.appendChild(messageDiv);
+            chatbox.scrollTop = chatbox.scrollHeight;
         }
 
         // Función para añadir un mensaje al chatbox
         function addMessage(sender, message, isUser = false) {
+            if (sender !== 'Sistema' && !isUser) {
+                // Si es un mensaje del asistente, usamos la función específica
+                return addAssistantMessage(message);
+            }
+
             const messageDiv = document.createElement('div');
             messageDiv.className = 'flex items-start mb-4';
 
             const iconDiv = document.createElement('div');
-            iconDiv.className = isUser ?
-                'flex-shrink-0 bg-green-500 text-white rounded-full p-2 mr-2' :
-                'flex-shrink-0 bg-blue-500 text-white rounded-full p-2 mr-2';
-
-            const icon = document.createElement('i');
-            if (sender === 'Sistema') {
+            
+            if (isUser) {
+                // Avatar del usuario
+                iconDiv.className = 'flex-shrink-0 bg-green-500 text-white rounded-full p-2 mr-2';
+                const icon = document.createElement('i');
+                icon.className = 'fas fa-user';
+                iconDiv.appendChild(icon);
+            } else if (sender === 'Sistema') {
+                // Icono del sistema
+                iconDiv.className = 'flex-shrink-0 bg-gray-500 text-white rounded-full p-2 mr-2';
+                const icon = document.createElement('i');
                 icon.className = 'fas fa-cog';
-            } else {
-                icon.className = isUser ? 'fas fa-user' : 'fas fa-robot';
+                iconDiv.appendChild(icon);
             }
-            iconDiv.appendChild(icon);
 
             const textDiv = document.createElement('div');
             textDiv.className = isUser ?
                 'bg-green-100 rounded-lg p-3 max-w-3/4' :
-                sender === 'Sistema' ? 'bg-gray-100 rounded-lg p-3 max-w-3/4' : 'bg-blue-100 rounded-lg p-3 max-w-3/4';
+                'bg-gray-100 rounded-lg p-3 max-w-3/4';
 
-            textDiv.innerHTML = `<p>${message.replace(/\n/g, '<br>')}</p>`;
+            if (isUser) {
+                const nameP = document.createElement('p');
+                nameP.className = 'font-medium text-green-800';
+                nameP.textContent = 'Tú';
+                textDiv.appendChild(nameP);
+            }
+
+            const contentP = document.createElement('p');
+            contentP.innerHTML = message.replace(/\n/g, '<br>');
+            textDiv.appendChild(contentP);
 
             messageDiv.appendChild(iconDiv);
             messageDiv.appendChild(textDiv);
@@ -308,7 +369,7 @@
             if (confirmation) {
                 const response = await sendMessage('reset');
                 chatbox.innerHTML = '';
-                addMessage('Asistente', '¡Hola! Soy tu asistente médico virtual. ¿En qué puedo ayudarte hoy?');
+                addAssistantMessage('¡Hola! Soy tu asistente médico virtual. ¿En qué puedo ayudarte hoy?');
             }
         });
 
