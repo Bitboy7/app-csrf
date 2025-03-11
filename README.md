@@ -47,6 +47,9 @@ Este proyecto es un sistema web para la gestión de clínicas médicas que permi
    DB_PASSWORD=contraseña_base_datos
    DB_HOST=localhost
    DB_PORT=3306
+
+   OPENAI_API_KEY=
+   GROQ_API_KEY=
    ```
 
 4. Configurar la base de datos
