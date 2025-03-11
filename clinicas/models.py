@@ -72,6 +72,7 @@ class Consulta(models.Model):
     
 class HistorialMedico(models.Model):
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE, related_name='historiales')
+    consulta = models.ForeignKey(Consulta, on_delete=models.SET_NULL, null=True, blank=True, related_name='historiales')
     fecha = models.DateField(auto_now_add=True)
     descripcion = models.TextField(blank=True, null=True)
     tratamiento = models.TextField(blank=True)

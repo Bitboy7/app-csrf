@@ -56,7 +56,6 @@ def user_register(request):
             password = form.cleaned_data.get('password1')
             telefono = form.cleaned_data.get('telefono')
             direccion = form.cleaned_data.get('direccion')
-            fecha_nacimiento = form.cleaned_data.get('fecha_nacimiento')
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)

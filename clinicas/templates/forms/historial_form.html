@@ -30,6 +30,14 @@
                 </ul>
             </div>
             {% endif %}
+            
+            <div class="mb-4">
+                <label for="{{ form.consulta.id_for_label }}" class="block text-gray-700 font-bold mb-2">
+                    <i class="fas fa-stethoscope text-purple-500"></i> Consulta Asociada
+                </label>
+                {{ form.consulta }}
+                <p class="text-gray-500 text-xs mt-1">Seleccione la consulta asociada a este historial (opcional).</p>
+            </div>
 
             <div class="mb-4">
                 <label for="{{ form.descripcion.id_for_label }}" class="block text-gray-700 font-bold mb-2">

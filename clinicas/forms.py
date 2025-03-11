@@ -44,6 +44,7 @@ class RegistroForm(UserCreationForm):
         required=False, 
         widget=forms.TextInput(attrs={'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline', 'placeholder': 'Teléfono'})
     )
+    
     fecha_nacimiento = forms.DateField(
         required=False, 
         widget=forms.DateInput(attrs={'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline', 'type': 'date'})
@@ -90,9 +91,13 @@ class RegistroForm(UserCreationForm):
         return user
 
 # Añade esta nueva clase de formulario
-class CambioPasswordForm(SetPasswordForm):
+class CambioPasswordForm(PasswordChangeForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields['old_password'].widget.attrs.update({
+            'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline',
+            'placeholder': 'Contraseña actual'
+        })
         self.fields['new_password1'].widget.attrs.update({
             'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline',
             'placeholder': 'Nueva contraseña'
@@ -201,6 +206,12 @@ class PacienteForm(forms.ModelForm):
         fields = ['nombre', 'paterno', 'materno', 'telefono', 'direccion', 'fecha_nacimiento', 'genero']
 
 class HistorialMedicoForm(forms.ModelForm):
+    consulta = forms.ModelChoiceField(
+                queryset=Consulta.objects.all(),
+                required=False,
+                widget=forms.Select(attrs={'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'})
+            )
+    
     descripcion = forms.CharField(
         widget=forms.Textarea(attrs={'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline', 'rows': 4})
     )
@@ -219,4 +230,4 @@ class HistorialMedicoForm(forms.ModelForm):
 
     class Meta:
         model = HistorialMedico
-        fields = ['descripcion', 'tratamiento', 'notas', 'archivos']
+        fields = ['descripcion', 'tratamiento', 'notas', 'archivos', 'consulta']
