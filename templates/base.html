@@ -197,6 +197,10 @@
               class="block px-4 py-3 text-gray-800 hover:bg-blue-500 hover:text-white">
               <i class="fas fa-chart-line mr-2"></i> Análisis de Datos
             </a>
+            <a href="{% url 'medication_stock_analysis' %}"
+                class="block px-4 py-3 text-gray-800 hover:bg-blue-500 hover:text-white">
+                <i class="fas fa-pills mr-2"></i> Análisis de Stock
+            </a>
           </div>
         </div>
 
@@ -309,6 +313,10 @@
         </a>
         <a href="{% url 'data_analysis' %}" class="block mobile-nav-button text-gray-800 hover:bg-blue-100 rounded-md">
           <i class="fas fa-chart-line"></i> Análisis de Datos
+        </a>
+        <a href="{% url 'medication_stock_analysis' %}"
+          class="block mobile-nav-button text-gray-800 hover:bg-blue-100 rounded-md">
+          <i class="fas fa-pills"></i> Análisis de Stock
         </a>
 
         <div class="border-t border-gray-200 my-2"></div>

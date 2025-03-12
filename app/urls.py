@@ -57,6 +57,17 @@ urlpatterns = [
     path('api/search/patients/', views.search_patients_api, name='search_patients_api'),
     path('analysis/patient/<int:patient_id>/pdf/', ia_views.print_patient_analysis, name='print_patient_analysis'),
     path('analysis/general/pdf/', ia_views.print_general_analysis, name='print_general_analysis'),
+     # Análisis de stock de medicamentos
+    path('medication/analysis/', ia_views.medication_stock_analysis, name='medication_stock_analysis'),
+    path('api/medication-stock/', ia_views.medication_stock_api, name='medication_stock_api'),
+    path('pdf/medication-analysis/', ia_views.print_medication_analysis, name='print_medication_analysis'),
+    # Gestión de stock
+    path('medicamentos/', ia_views.medicamento_list, name='medicamento_list'),
+    path('medicamentos/create/', ia_views.medicamento_create, name='medicamento_create'),
+    path('medicamentos/edit/<int:medicamento_id>/', ia_views.medicamento_edit, name='medicamento_edit'),
+    path('medicamentos/<int:medicamento_id>/historial/', ia_views.medicamento_historial, name='medicamento_historial'),
+    path('movimientos/create/', ia_views.movimiento_create, name='movimiento_create'),
+    path('stock/alert-config/', ia_views.stock_alert_config, name='stock_alert_config'),
 ]
 
 # Servir archivos media durante el desarrollo

@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+
+{% block title %}Inventario de Medicamentos{% endblock %}
+
+{% block content %}
+<div class="container mx-auto py-8">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-blue-600">
+            <i class="fas fa-pills mr-2"></i>Inventario de Medicamentos
+        </h1>
+        <div class="flex space-x-2">
+            <a href="{% url 'medicamento_create' %}" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                <i class="fas fa-plus-circle mr-1"></i> Nuevo Medicamento
+            </a>
+            <a href="{% url 'movimiento_create' %}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                <i class="fas fa-exchange-alt mr-1"></i> Registrar Movimiento
+            </a>
+            <a href="{% url 'medication_stock_analysis' %}" class="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600">
+                <i class="fas fa-chart-line mr-1"></i> Análisis de Stock
+            </a>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="bg-white p-4 rounded-lg shadow-md mb-6">
+        <div class="flex flex-wrap items-center">
+            <span class="mr-2 font-medium">Filtrar por estado:</span>
+            <a href="{% url 'medicamento_list' %}" class="px-3 py-1 rounded-full {% if not estado_filtro %}bg-blue-500 text-white{% else %}bg-gray-200 text-gray-700{% endif %} mr-2">
+                Todos
+            </a>
+            <a href="{% url 'medicamento_list' %}?estado=bajo" class="px-3 py-1 rounded-full {% if estado_filtro == 'bajo' %}bg-orange-500 text-white{% else %}bg-gray-200 text-gray-700{% endif %} mr-2">
+                Stock Bajo
+            </a>
+            <a href="{% url 'medicamento_list' %}?estado=agotado" class="px-3 py-1 rounded-full {% if estado_filtro == 'agotado' %}bg-red-500 text-white{% else %}bg-gray-200 text-gray-700{% endif %}">
+                Agotados
+            </a>
+        </div>
+    </div>
+
+    {% if medicamentos %}
+    <div class="bg-white overflow-hidden shadow-md rounded-lg">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Nombre
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Presentación
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Stock Actual
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Stock Mínimo
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Estado
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Última Reposición
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Acciones
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for medicamento in medicamentos %}
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="font-medium text-gray-900">{{ medicamento.nombre }}</div>
+                        {% if medicamento.descripcion %}
+                        <div class="text-sm text-gray-500">{{ medicamento.descripcion|truncatechars:50 }}</div>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {{ medicamento.presentacion }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {{ medicamento.cantidad_actual }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {{ medicamento.cantidad_minima }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        {% if medicamento.estado_stock == 'agotado' %}
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                            Agotado
+                        </span>
+                        {% elif medicamento.estado_stock == 'bajo' %}
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-orange-100 text-orange-800">
+                            Stock Bajo
+                        </span>
+                        {% else %}
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                            Normal
+                        </span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {{ medicamento.fecha_ultima_reposicion|date:"d/m/Y" }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <a href="{% url 'medicamento_edit' medicamento.id %}" class="text-blue-600 hover:text-blue-900 mr-3">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{% url 'medicamento_historial' medicamento.id %}" class="text-green-600 hover:text-green-900">
+                            <i class="fas fa-history"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+        <p class="text-gray-600">No hay medicamentos registrados{% if estado_filtro %} con el filtro seleccionado{% endif %}.</p>
+        <a href="{% url 'medicamento_create' %}" class="inline-block mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+            <i class="fas fa-plus-circle mr-1"></i> Añadir medicamento
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

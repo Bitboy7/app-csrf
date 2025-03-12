@@ -126,6 +126,25 @@
   </div>
 </div>
 
+<!-- En templates/usuario/index.html o donde corresponda -->
+<div class="bg-white p-6 rounded-lg shadow-lg mt-4">
+  <h2 class="text-2xl font-bold mb-2 text-gray-800">Gestión de Stock</h2>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <a href="{% url 'medication_stock_analysis' %}" class="bg-blue-100 hover:bg-blue-200 p-4 rounded-lg text-center">
+      <i class="fas fa-pills text-blue-600 text-3xl mb-2"></i>
+      <p class="font-semibold">Análisis de Stock</p>
+    </a>
+    <a href="{% url 'medicamento_list' %}" class="bg-blue-100 hover:bg-blue-200 p-4 rounded-lg text-center">
+      <i class="fas fa-list text-blue-600 text-3xl mb-2"></i>
+      <p class="font-semibold">Ver Inventario</p>
+    </a>
+    <a href="{% url 'movimiento_create' %}" class="bg-blue-100 hover:bg-blue-200 p-4 rounded-lg text-center">
+      <i class="fas fa-exchange-alt text-blue-600 text-3xl mb-2"></i>
+      <p class="font-semibold">Registrar Movimiento</p>
+    </a>
+  </div>
+</div>
+
 <!-- JavaScript para manejar el modal -->
 <script>
   // Función para mostrar el modal de eliminación
@@ -178,4 +197,5 @@
     }
   });
 </script>
+
 {% endblock %}

@@ -1,0 +1,233 @@
+{% extends 'base.html' %}
+
+{% block title %}Análisis de Datos Médicos{% endblock %}
+
+{% block content %}
+{% csrf_token %}
+<div class="container mx-auto py-2">
+    <div class="mb-1"></div>
+    <div class="mb-1">
+        <a href="{% url 'medicamento_list' %}" class="text-blue-500 hover:underline">
+            <i class="fas fa-arrow-left mr-1"></i> Volver al inventario
+        </a>
+    </div>
+
+    <h1 class="text-2xl font-bold text-blue-600 mb-6">
+        <i class="fas fa-chart-line mr-2"></i>Análisis de Stock de Medicamentos
+    </h1>
+
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Panel de análisis -->
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <h2 class="text-xl font-bold text-blue-600 mb-4">Seleccionar Análisis</h2>
+            
+            <div class="mb-4">
+                <p class="text-gray-600 mb-4">Elige un tipo de análisis para obtener insights sobre el stock de medicamentos:</p>
+                
+                <div class="space-y-4">
+                    <button id="alertas-btn" data-type="alertas_stock" class="analysis-btn w-full bg-blue-100 hover:bg-blue-200 px-4 py-3 rounded-lg text-left">
+                        <i class="fas fa-exclamation-triangle mr-2 text-orange-600"></i>
+                        <span class="font-medium">Alertas de stock bajo</span>
+                    </button>
+                    
+                    <button id="consumo-btn" data-type="patrones_consumo" class="analysis-btn w-full bg-blue-100 hover:bg-blue-200 px-4 py-3 rounded-lg text-left">
+                        <i class="fas fa-chart-bar mr-2 text-blue-600"></i>
+                        <span class="font-medium">Patrones de consumo</span>
+                    </button>
+                    
+                    <button id="estacionalidad-btn" data-type="estacionalidad" class="analysis-btn w-full bg-blue-100 hover:bg-blue-200 px-4 py-3 rounded-lg text-left">
+                        <i class="fas fa-calendar-alt mr-2 text-green-600"></i>
+                        <span class="font-medium">Análisis de estacionalidad</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="mt-6 border-t pt-4">
+                <h3 class="font-semibold text-gray-700 mb-2">Exportar análisis a PDF</h3>
+                <div class="flex flex-wrap gap-2">
+                    <a href="{% url 'print_medication_analysis' %}?type=alertas_stock" target="_blank"
+                        class="inline-flex items-center px-3 py-1.5 bg-red-100 text-red-700 rounded hover:bg-red-200">
+                        <i class="fas fa-file-pdf mr-1"></i> Alertas
+                    </a>
+                    <a href="{% url 'print_medication_analysis' %}?type=patrones_consumo" target="_blank"
+                        class="inline-flex items-center px-3 py-1.5 bg-blue-100 text-blue-700 rounded hover:bg-blue-200">
+                        <i class="fas fa-file-pdf mr-1"></i> Consumo
+                    </a>
+                    <a href="{% url 'print_medication_analysis' %}?type=estacionalidad" target="_blank"
+                        class="inline-flex items-center px-3 py-1.5 bg-green-100 text-green-700 rounded hover:bg-green-200">
+                        <i class="fas fa-file-pdf mr-1"></i> Estacionalidad
+                    </a>
+                </div>
+            </div>
+
+            <div id="analysis-loading" class="hidden">
+                <div class="flex justify-center items-center py-4">
+                    <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"></div>
+                    <p class="ml-2">Analizando datos con IA...</p>
+                </div>
+            </div>
+            
+            <div id="analysis-result" class="hidden">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="font-bold text-gray-700">Resultados del análisis:</h3>
+                    <button id="print-analysis" class="bg-blue-100 text-blue-700 px-3 py-1 rounded hover:bg-blue-200">
+                        <i class="fas fa-print mr-1"></i> Imprimir
+                    </button>
+                </div>
+                <div id="analysis-content" class="bg-gray-50 p-4 rounded-lg whitespace-pre-wrap text-gray-800"></div>
+            </div>
+        </div>
+
+        <!-- Información y recomendaciones -->
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <h2 class="text-xl font-bold text-blue-600 mb-4">Información de Gestión de Stock</h2>
+            
+            <div class="mb-6">
+                <h3 class="font-semibold text-gray-700 mb-2">¿Qué incluye el análisis?</h3>
+                <ul class="list-disc pl-5 space-y-1 text-gray-600">
+                    <li>Identificación de medicamentos con stock bajo o agotado</li>
+                    <li>Análisis de patrones de consumo en los últimos 3 meses</li>
+                    <li>Detección de tendencias estacionales en el consumo</li>
+                    <li>Recomendaciones para optimizar el inventario</li>
+                </ul>
+            </div>
+            
+            <div class="mb-6">
+                <h3 class="font-semibold text-gray-700 mb-2">Buenas prácticas de inventario</h3>
+                <ul class="list-disc pl-5 space-y-1 text-gray-600">
+                    <li>Mantener niveles mínimos de stock según la demanda histórica</li>
+                    <li>Realizar revisiones periódicas del inventario</li>
+                    <li>Considerar factores estacionales en las compras</li>
+                    <li>Establecer alertas automáticas para reposición</li>
+                    <li>Registrar todos los movimientos para mejorar análisis futuros</li>
+                </ul>
+            </div>
+            
+            <div class="mb-6">
+                <h3 class="font-semibold text-gray-700 mb-2">Configuración de alertas</h3>
+                <p class="text-gray-600 mb-2">Las alertas automáticas están configuradas para notificar cuando un medicamento alcanza su nivel mínimo de stock.</p>
+                <a href="{% url 'medicamento_list' %}" class="text-blue-500 hover:underline">
+                    <i class="fas fa-arrow-left mr-1"></i> Volver al inventario
+                </a>
+                <a href="{% url 'stock_alert_config' %}" class="text-blue-600 hover:underline">
+                    <i class="fas fa-cog mr-1"></i> Configurar preferencias de alertas
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Referencias a elementos DOM
+        const analysisButtons = document.querySelectorAll('.analysis-btn');
+        const loadingDiv = document.getElementById('analysis-loading');
+        const resultDiv = document.getElementById('analysis-result');
+        const contentDiv = document.getElementById('analysis-content');
+        const printButton = document.getElementById('print-analysis');
+
+        let currentAnalysisType = null;
+
+        // Función para realizar análisis
+        async function performAnalysis(analysisType) {
+            // Resaltar el botón activo
+            analysisButtons.forEach(btn => {
+                btn.classList.remove('ring-2', 'ring-blue-500');
+                btn.classList.add('bg-blue-100');
+            });
+
+            const activeButton = document.querySelector(`[data-type="${analysisType}"]`);
+            if (activeButton) {
+                activeButton.classList.add('ring-2', 'ring-blue-500');
+                activeButton.classList.remove('bg-blue-100');
+                activeButton.classList.add('bg-blue-200');
+            }
+
+            // Mostrar loading y ocultar resultados previos
+            loadingDiv.classList.remove('hidden');
+            resultDiv.classList.add('hidden');
+            currentAnalysisType = analysisType;
+
+            try {
+                // Obtener el token CSRF de forma segura
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+                // Enviar solicitud al servidor usando URLSearchParams para mejor compatibilidad
+                const response = await fetch('{% url "medication_stock_api" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': csrfToken
+                    },
+                    body: new URLSearchParams({
+                        'query_type': analysisType
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+
+                // Ocultar carga
+                loadingDiv.classList.add('hidden');
+
+                // Mostrar resultados con formato
+                if (data.analysis) {
+                    // Reemplazar saltos de línea con <br> para HTML
+                    const formattedText = data.analysis
+                        .replace(/\n\n/g, '<br><br>')
+                        .replace(/\n/g, '<br>');
+
+                    // Reemplazar listas para mejor visualización
+                    const finalText = formattedText
+                        .replace(/- ([^<]+)<br>/g, '<li>$1</li>')
+                        .replace(/<li>/g, '<ul class="list-disc ml-6 my-2"><li>')
+                        .replace(/<\/li><br><br>/g, '</li></ul><br>')
+                        .replace(/<\/li><br>/g, '</li></ul>');
+
+                    contentDiv.innerHTML = finalText;
+                    resultDiv.classList.remove('hidden');
+                } else {
+                    contentDiv.innerHTML = '<p class="text-red-500">No se recibieron datos del análisis.</p>';
+                    resultDiv.classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                loadingDiv.classList.add('hidden');
+                contentDiv.innerHTML = `
+                    <div class="p-4 border border-red-200 bg-red-50 text-red-800 rounded">
+                        <p class="font-bold mb-2">Error al realizar el análisis:</p>
+                        <p>${error.message}</p>
+                        <p class="text-sm mt-2">Por favor, intente nuevamente o contacte al administrador.</p>
+                    </div>
+                `;
+                resultDiv.classList.remove('hidden');
+            }
+        }
+
+        // Asignar eventos a botones de análisis
+        analysisButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const analysisType = this.getAttribute('data-type');
+                performAnalysis(analysisType);
+            });
+        });
+
+        // Botón de impresión
+        printButton.addEventListener('click', function () {
+            if (currentAnalysisType) {
+                window.open(`{% url 'print_medication_analysis' %}?type=${currentAnalysisType}`, '_blank');
+            }
+        });
+
+        // Ejecutar análisis de stock bajo automáticamente al cargar
+        document.getElementById('alertas-btn').click();
+    });
+</script>
+{% endblock %}

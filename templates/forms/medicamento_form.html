@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if medicamento %}Editar Medicamento{% else %}Nuevo Medicamento{% endif %}{% endblock %}
+
+{% block content %}
+<div class="flex justify-center items-center py-8">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-2xl">
+        <h1 class="text-2xl font-bold text-center text-blue-600 mb-6">
+            {% if medicamento %}Editar{% else %}Nuevo{% endif %} Medicamento
+        </h1>
+
+        <form method="post" class="space-y-4">
+            {% csrf_token %}
+
+            {% if form.errors %}
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+                <ul>
+                    {% for field, errors in form.errors.items %}
+                    {% for error in errors %}
+                    <li>{{ error }}</li>
+                    {% endfor %}
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="mb-4">
+                    <label for="{{ form.nombre.id_for_label }}" class="block text-gray-700 font-bold mb-2">
+                        <i class="fas fa-capsules text-blue-500 mr-2"></i>Nombre
+                    </label>
+                    {{ form.nombre }}
+                </div>
+
+                <div class="mb-4">
+                    <label for="{{ form.presentacion.id_for_label }}" class="block text-gray-700 font-bold mb-2">
+                        <i class="fas fa-prescription-bottle text-purple-500 mr-2"></i>Presentación
+                    </label>
+                    {{ form.presentacion }}
+                </div>
+
+                <div class="mb-4">
+                    <label for="{{ form.laboratorio.id_for_label }}" class="block text-gray-700 font-bold mb-2">
+                        <i class="fas fa-building text-green-500 mr-2"></i>Laboratorio
+                    </label>
+                    {{ form.laboratorio }}
+                </div>
+
+                <div class="mb-4">
+                    <label for="{{ form.precio.id_for_label }}" class="block text-gray-700 font-bold mb-2">
+                        <i class="fas fa-tag text-yellow-500 mr-2"></i>Precio
+                    </label>
+                    {{ form.precio }}
+                </div>
+
+                <div class="mb-4">
+                    <label for="{{ form.cantidad_actual.id_for_label }}" class="block text-gray-700 font-bold mb-2">
+                        <i class="fas fa-cubes text-blue-500 mr-2"></i>Cantidad Actual
+                    </label>
+                    {{ form.cantidad_actual }}
+                </div>
+
+                <div class="mb-4">
+                    <label for="{{ form.cantidad_minima.id_for_label }}" class="block text-gray-700 font-bold mb-2">
+                        <i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>Cantidad Mínima
+                    </label>
+                    {{ form.cantidad_minima }}
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label for="{{ form.descripcion.id_for_label }}" class="block text-gray-700 font-bold mb-2">
+                    <i class="fas fa-align-left text-gray-500 mr-2"></i>Descripción
+                </label>
+                {{ form.descripcion }}
+                <p class="text-gray-500 text-xs mt-1">Ingrese una breve descripción del medicamento, incluyendo indicaciones generales.</p>
+            </div>
+
+            <div class="flex justify-between mt-6">
+                <a href="{% url 'medicamento_list' %}" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
+                    <i class="fas fa-arrow-left"></i> Volver
+                </a>
+
+                <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600">
+                    <i class="fas fa-save mr-2"></i>{% if medicamento %}Actualizar{% else %}Guardar{% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

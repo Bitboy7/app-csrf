@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}Configuración de Alertas de Stock{% endblock %}
+
+{% block content %}
+<div class="container mx-auto py-2">
+    <div class="mb-1">
+        <a href="{% url 'medication_stock_analysis' %}" class="text-blue-500 hover:underline">
+            <i class="fas fa-arrow-left mr-1"></i> Volver al análisis de stock
+        </a>
+    </div>
+
+    <h1 class="text-2xl font-bold text-blue-600 mb-6">
+        <i class="fas fa-bell mr-2"></i>Configuración de Alertas de Stock
+    </h1>
+
+    <div class="bg-white p-6 rounded-lg shadow-lg">
+        {% if messages %}
+        <div class="mb-4">
+            {% for message in messages %}
+            <div class="p-4 {% if message.tags == 'success' %}bg-green-100 text-green-800 border border-green-200{% else %}bg-blue-100 text-blue-800 border border-blue-200{% endif %} rounded-lg">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+            
+            <div class="mb-4">
+                <h2 class="text-lg font-semibold text-gray-700 mb-3">Alertas de stock bajo</h2>
+                
+                <div class="flex items-center space-x-2">
+                    <input type="checkbox" id="notify_low_stock" name="notify_low_stock" class="h-5 w-5 text-blue-600" 
+                           {% if config and config.notify_low_stock %}checked{% endif %}>
+                    <label for="notify_low_stock" class="text-gray-700">Activar alertas de stock bajo</label>
+                </div>
+                <p class="text-sm text-gray-500 mt-1">Recibir notificaciones cuando un medicamento alcance su nivel mínimo de stock</p>
+            </div>
+            
+            <div class="mb-4">
+                <label for="threshold_percentage" class="block text-gray-700 font-medium mb-2">Umbral de alerta</label>
+                <div class="flex items-center space-x-2">
+                    <input type="range" id="threshold_percentage" name="threshold_percentage" 
+                           min="50" max="200" step="10" 
+                           value="{{ config.threshold_percentage|default:100 }}"
+                           class="w-full h-2 bg-blue-100 rounded-lg appearance-none">
+                    <span id="threshold_value" class="text-gray-700 min-w-[3rem]">{{ config.threshold_percentage|default:100 }}%</span>
+                </div>
+                <p class="text-sm text-gray-500 mt-1">
+                    100% significa alertar exactamente cuando se llega al stock mínimo.<br>
+                    Valores mayores a 100% alertarán antes de llegar al stock mínimo,<br>
+                    valores menores alertarán cuando ya se haya traspasado el stock mínimo.
+                </p>
+            </div>
+            
+            <div class="mb-4">
+                <h2 class="text-lg font-semibold text-gray-700 mb-3">Método de notificación</h2>
+                
+                <div class="flex items-center space-x-2">
+                    <input type="checkbox" id="email_notifications" name="email_notifications" class="h-5 w-5 text-blue-600"
+                           {% if config and config.email_notifications %}checked{% endif %}>
+                    <label for="email_notifications" class="text-gray-700">Notificaciones por correo electrónico</label>
+                </div>
+                <p class="text-sm text-gray-500 mt-1">Además de las notificaciones en la aplicación, recibir alertas por correo</p>
+            </div>
+            
+            <div class="pt-4 border-t border-gray-200">
+                <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600">
+                    <i class="fas fa-save mr-1"></i> Guardar configuración
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const thresholdRange = document.getElementById('threshold_percentage');
+        const thresholdValue = document.getElementById('threshold_value');
+        
+        // Actualizar el valor mostrado al mover el slider
+        thresholdRange.addEventListener('input', function() {
+            thresholdValue.textContent = this.value + '%';
+        });
+    });
+</script>
+{% endblock %}
