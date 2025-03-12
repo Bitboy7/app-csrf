@@ -32,14 +32,14 @@
                 </div>
 
                 <div class="mb-4">
-                    <label for="{{ form.paterno.id_for_label }}"
-                        class="block text-gray-700 font-bold mb-2">Apellido Paterno</label>
+                    <label for="{{ form.paterno.id_for_label }}" class="block text-gray-700 font-bold mb-2">Apellido
+                        Paterno</label>
                     {{ form.paterno }}
                 </div>
 
                 <div class="mb-4">
-                    <label for="{{ form.materno.id_for_label }}"
-                        class="block text-gray-700 font-bold mb-2">Apellido Materno</label>
+                    <label for="{{ form.materno.id_for_label }}" class="block text-gray-700 font-bold mb-2">Apellido
+                        Materno</label>
                     {{ form.materno }}
                 </div>
 
@@ -64,14 +64,24 @@
 
             <div class="flex justify-between mt-6">
                 <a href="{% url 'index' %}" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
-                <i class="fas fa-arrow-left"></i>
+                    <i class="fas fa-arrow-left"></i>
                 </a>
-            
+
                 <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600">
-                <i class="fas fa-save"></i>  {% if form.instance.id %}Actualizar{% else %}Guardar{% endif %}
+                    <i class="fas fa-save"></i> {% if form.instance.id %}Actualizar{% else %}Guardar{% endif %}
                 </button>
             </div>
         </form>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const fechaNacimientoInput = document.getElementById('id_fecha_nacimiento');
+            const fechaActual = "{{ form.instance.fecha_nacimiento|date:'Y-m-d' }}";
+
+            if (fechaActual && fechaActual !== 'None' && !fechaNacimientoInput.value) {
+                fechaNacimientoInput.value = fechaActual;
+            }
+        });
+    </script>
 </div>
 {% endblock %}

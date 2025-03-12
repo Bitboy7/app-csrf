@@ -1,20 +1,22 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{% block title %}Mi Aplicación{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>{% block title %}Acaclinic{% endblock %}</title>
+  <link rel="icon" type="image/png" href="/static/icons8-clinic-color-16.png">
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet" />
-  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet" />
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
+    body {
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+
     .dropdown-menu {
       display: none;
       position: absolute;
@@ -67,51 +69,165 @@
       object-fit: cover;
       border: 2px solid white;
     }
+
+    /* Mobile menu */
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 1001;
+    }
+
+    .mobile-menu.show {
+      display: block;
+    }
+
+    .mobile-menu-content {
+      background-color: white;
+      width: 75%;
+      height: 100%;
+      max-width: 300px;
+      position: absolute;
+      left: 0;
+      top: 0;
+      overflow-y: auto;
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+    }
+
+    .mobile-menu.show .mobile-menu-content {
+      transform: translateX(0);
+    }
+
+    /* Tamaños de botones táctiles para móvil */
+    .mobile-nav-button {
+      min-height: 44px;
+      min-width: 44px;
+      padding: 0.75rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    .mobile-nav-button i {
+      margin-right: 12px;
+      width: 20px;
+      text-align: center;
+    }
+
+    /* Botones táctiles más grandes */
+    button,
+    a {
+      touch-action: manipulation;
+    }
+
+    @media (max-width: 768px) {
+      .desktop-nav {
+        display: none;
+      }
+
+      .mobile-nav-toggle {
+        display: block;
+      }
+
+      .dropdown-menu {
+        position: static;
+        box-shadow: none;
+        border-radius: 0;
+        width: 100%;
+        margin-top: 0;
+        margin-bottom: 0.5rem;
+      }
+    }
+
+    @media (min-width: 769px) {
+      .mobile-nav-toggle {
+        display: none;
+      }
+
+      .desktop-nav {
+        display: flex;
+      }
+    }
   </style>
 </head>
 
 <body class="bg-gray-100">
-  <nav class="bg-blue-600 p-3 mb-4 shadow-lg text-white">
+  <!-- Navbar -->
+  <nav class="bg-blue-600 p-3 mb-4 shadow-lg text-white sticky top-0 z-10">
     <div class="container mx-auto flex justify-between items-center">
-      <a href="{% url 'index' %}" class="text-white text-2xl font-bold"><i class="fas fa-clinic-medical"></i>
-        Acaclinic</a>
       <div class="flex items-center">
-        {% if user.is_authenticated %}
-        <a href="{% url 'index' %}" class="text-white mr-4"><i class="fas fa-home"></i> Inicio</a>
+        <!-- Botón de menú móvil -->
+        <button id="mobile-menu-toggle" class="mobile-nav-toggle mr-2 text-white focus:outline-none">
+          <i class="fas fa-bars text-xl"></i>
+        </button>
 
-        <!-- chat -->
-        <a href="{% url 'chatbot' %}" class="text-white mr-4">
-          <i class="fas fa-robot"></i> Asistente Médico
+        <!-- Logo -->
+        <a href="{% url 'index' %}" class="text-white text-xl md:text-2xl font-bold">
+          <i class="fas fa-clinic-medical"></i> Acaclinic
         </a>
+      </div>
 
-        <!-- Data analys-->
-        <a href="{% url 'data_analysis' %}" class="text-white mr-4"><i class="fas fa-chart-line"></i> Análisis de Datos</a>
+      <!-- Navegación de escritorio -->
+      <div class="desktop-nav items-center">
+        {% if user.is_authenticated %}
+        <a href="{% url 'index' %}" class="text-white mr-4"><i class="fas fa-home"></i> <span
+            class="hidden md:inline">Inicio</span></a>
 
-        <!-- Dropdown 1 -->
+        <!-- Dropdown IA -->
         <div class="relative mr-4">
-          <button id="accionesButton" class="flex items-center focus:outline-none text-white">
-            <i class="fas fa-plus-circle mr-1"></i>
-            <span>Nuevo</span>
+          <button id="iaButton" class="flex items-center focus:outline-none text-white">
+            <i class="fas fa-magic mr-1"></i>
+            <span class="hidden md:inline">IA</span>
             <svg class="ml-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd"
-          d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-          clip-rule="evenodd" />
+                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                clip-rule="evenodd" />
             </svg>
           </button>
-          <div id="accionesMenu" class="dropdown-menu right-0 mt-2 py-2 w-48 bg-white rounded-lg shadow-xl">
-            <a href="{% url 'doctor_create' %}" class="block px-4 py-2 text-gray-800 hover:bg-blue-500 hover:text-white">
-              <i class="fas fa-user-md"></i> Nuevo doctor
+          <div id="iaMenu" class="dropdown-menu right-0 mt-2 py-2 w-48 bg-white rounded-lg shadow-xl">
+            <a href="{% url 'chatbot' %}" class="block px-4 py-3 text-gray-800 hover:bg-blue-500 hover:text-white">
+              <i class="fas fa-robot mr-2"></i> Asistente Médico
             </a>
-            <a href="{% url 'paciente_create' %}" class="block px-4 py-2 text-gray-800 hover:bg-blue-500 hover:text-white">
-              <i class="fas fa-user-plus"></i> Nuevo paciente
-            </a>
-            <a href="{% url 'consulta_create' %}" class="block px-4 py-2 text-gray-800 hover:bg-blue-500 hover:text-white">
-              <i class="fas fa-notes-medical"></i> Nueva consulta
+            <a href="{% url 'data_analysis' %}"
+              class="block px-4 py-3 text-gray-800 hover:bg-blue-500 hover:text-white">
+              <i class="fas fa-chart-line mr-2"></i> Análisis de Datos
             </a>
           </div>
         </div>
 
-        <!-- Dropdown 2 -->
+        <!-- Dropdown Nuevo -->
+        <div class="relative mr-4">
+          <button id="accionesButton" class="flex items-center focus:outline-none text-white">
+            <i class="fas fa-plus-circle mr-1"></i>
+            <span class="hidden md:inline">Nuevo</span>
+            <svg class="ml-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd"
+                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                clip-rule="evenodd" />
+            </svg>
+          </button>
+          <div id="accionesMenu" class="dropdown-menu right-0 mt-2 py-2 w-48 bg-white rounded-lg shadow-xl">
+            <a href="{% url 'doctor_create' %}"
+              class="block px-4 py-3 text-gray-800 hover:bg-blue-500 hover:text-white">
+              <i class="fas fa-user-md mr-2"></i> Nuevo doctor
+            </a>
+            <a href="{% url 'paciente_create' %}"
+              class="block px-4 py-3 text-gray-800 hover:bg-blue-500 hover:text-white">
+              <i class="fas fa-user-plus mr-2"></i> Nuevo paciente
+            </a>
+            <a href="{% url 'consulta_create' %}"
+              class="block px-4 py-3 text-gray-800 hover:bg-blue-500 hover:text-white">
+              <i class="fas fa-notes-medical mr-2"></i> Nueva consulta
+            </a>
+          </div>
+        </div>
+
+        <!-- Dropdown Usuario -->
         <div class="relative">
           <button id="userMenuButton" class="flex items-center focus:outline-none">
             {% if user.foto_perfil %}
@@ -121,31 +237,123 @@
               <i class="fas fa-user"></i>
             </div>
             {% endif %}
-            <span>{{ user.username }}</span>
-            <svg class="ml-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <span class="hidden md:inline">{{ user.username }}</span>
+            <svg class="ml-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd"
                 d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
                 clip-rule="evenodd" />
             </svg>
           </button>
           <div id="userMenu" class="dropdown-menu right-0 mt-2 py-2 w-48 bg-white rounded-lg shadow-xl">
-            <a href="{% url 'perfil' %}" class="block px-4 py-2 text-gray-800 hover:bg-blue-500 hover:text-white"><i class="fas fa-user-circle"></i> Mi Perfil</a>
-            <a href="{% url 'cambiar_password' %}" class="block px-4 py-2 text-gray-800 hover:bg-blue-500 hover:text-white"><i class="fas fa-key"></i> Cambiar Contraseña</a>
-            <form action="{% url 'logout' %}" method="post" class="block px-4 py-2 text-gray-800 hover:bg-blue-500 hover:text-white">
+            <a href="{% url 'perfil' %}" class="block px-4 py-3 text-gray-800 hover:bg-blue-500 hover:text-white">
+              <i class="fas fa-user-circle mr-2"></i> Mi Perfil
+            </a>
+            <a href="{% url 'cambiar_password' %}"
+              class="block px-4 py-3 text-gray-800 hover:bg-blue-500 hover:text-white">
+              <i class="fas fa-key mr-2"></i> Cambiar Contraseña
+            </a>
+            <form action="{% url 'logout' %}" method="post"
+              class="block px-4 py-3 text-gray-800 hover:bg-blue-500 hover:text-white">
               {% csrf_token %}
-              <button type="submit" class="w-full text-left"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</button>
+              <button type="submit" class="w-full text-left">
+                <i class="fas fa-sign-out-alt mr-2"></i> Cerrar sesión
+              </button>
             </form>
           </div>
         </div>
         {% else %}
-        <a href="{% url 'login' %}" class="text-white mr-4"><i class="fas fa-sign-in-alt"></i> Login</a>
-        <a href="{% url 'register' %}" class="text-white"><i class="fas fa-user-plus"></i> Registro</a>
+        <a href="{% url 'login' %}" class="text-white mr-4 py-2">
+          <i class="fas fa-sign-in-alt mr-1"></i> <span class="hidden md:inline">Login</span>
+        </a>
+        <a href="{% url 'register' %}" class="text-white py-2">
+          <i class="fas fa-user-plus mr-1"></i> <span class="hidden md:inline">Registro</span>
+        </a>
         {% endif %}
       </div>
     </div>
   </nav>
 
-  <div class="container mx-auto">
+  <!-- Menú móvil -->
+  <div id="mobile-menu" class="mobile-menu">
+    <div class="mobile-menu-content p-0">
+      <div class="bg-blue-600 text-white p-4 flex justify-between items-center">
+        {% if user.is_authenticated %}
+        <div class="flex items-center">
+          {% if user.foto_perfil %}
+          <img src="{{ user.foto_perfil.url }}" alt="{{ user.username }}" class="avatar-img mr-3">
+          {% else %}
+          <div class="avatar-placeholder mr-3">
+            <i class="fas fa-user"></i>
+          </div>
+          {% endif %}
+          <span class="font-bold">{{ user.username }}</span>
+        </div>
+        {% else %}
+        <span class="font-bold">Menú</span>
+        {% endif %}
+        <button id="mobile-menu-close" class="focus:outline-none">
+          <i class="fas fa-times text-xl"></i>
+        </button>
+      </div>
+
+      <div class="p-2">
+        {% if user.is_authenticated %}
+        <a href="{% url 'index' %}" class="block mobile-nav-button text-gray-800 hover:bg-blue-100 rounded-md">
+          <i class="fas fa-home"></i> Inicio
+        </a>
+
+        <div class="border-t border-gray-200 my-2"></div>
+        <p class="text-sm text-gray-600 ml-2 mb-1">IA</p>
+        <a href="{% url 'chatbot' %}" class="block mobile-nav-button text-gray-800 hover:bg-blue-100 rounded-md">
+          <i class="fas fa-robot"></i> Asistente Médico
+        </a>
+        <a href="{% url 'data_analysis' %}" class="block mobile-nav-button text-gray-800 hover:bg-blue-100 rounded-md">
+          <i class="fas fa-chart-line"></i> Análisis de Datos
+        </a>
+
+        <div class="border-t border-gray-200 my-2"></div>
+        <p class="text-sm text-gray-600 ml-2 mb-1">Crear nuevo</p>
+        <a href="{% url 'doctor_create' %}" class="block mobile-nav-button text-gray-800 hover:bg-blue-100 rounded-md">
+          <i class="fas fa-user-md"></i> Nuevo doctor
+        </a>
+        <a href="{% url 'paciente_create' %}"
+          class="block mobile-nav-button text-gray-800 hover:bg-blue-100 rounded-md">
+          <i class="fas fa-user-plus"></i> Nuevo paciente
+        </a>
+        <a href="{% url 'consulta_create' %}"
+          class="block mobile-nav-button text-gray-800 hover:bg-blue-100 rounded-md">
+          <i class="fas fa-notes-medical"></i> Nueva consulta
+        </a>
+
+        <div class="border-t border-gray-200 my-2"></div>
+        <p class="text-sm text-gray-600 ml-2 mb-1">Mi cuenta</p>
+        <a href="{% url 'perfil' %}" class="block mobile-nav-button text-gray-800 hover:bg-blue-100 rounded-md">
+          <i class="fas fa-user-circle"></i> Mi Perfil
+        </a>
+        <a href="{% url 'cambiar_password' %}"
+          class="block mobile-nav-button text-gray-800 hover:bg-blue-100 rounded-md">
+          <i class="fas fa-key"></i> Cambiar Contraseña
+        </a>
+        <form action="{% url 'logout' %}" method="post">
+          {% csrf_token %}
+          <button type="submit" class="w-full text-left mobile-nav-button text-gray-800 hover:bg-blue-100 rounded-md">
+            <i class="fas fa-sign-out-alt"></i> Cerrar sesión
+          </button>
+        </form>
+        {% else %}
+        <a href="{% url 'login' %}" class="block mobile-nav-button text-gray-800 hover:bg-blue-100 rounded-md">
+          <i class="fas fa-sign-in-alt"></i> Iniciar sesión
+        </a>
+        <a href="{% url 'register' %}" class="block mobile-nav-button text-gray-800 hover:bg-blue-100 rounded-md">
+          <i class="fas fa-user-plus"></i> Registrarse
+        </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Contenido principal -->
+  <div class="container mx-auto px-4">
     {% if messages %}
     {% for message in messages %}
     <div
@@ -158,27 +366,68 @@
   </div>
 
   <script>
-    // Toggle dropdown menu
-    document.getElementById('userMenuButton').addEventListener('click', function () {
-      document.getElementById('userMenu').classList.toggle('show');
-    });
+    document.addEventListener('DOMContentLoaded', function () {
+      // Toggle dropdown menu en escritorio
+      document.getElementById('userMenuButton').addEventListener('click', function () {
+        document.getElementById('userMenu').classList.toggle('show');
+      });
 
-    // Close dropdown menu when clicking outside
-    window.addEventListener('click', function (e) {
-      if (!document.getElementById('userMenuButton').contains(e.target)) {
-        document.getElementById('userMenu').classList.remove('show');
-      }
-    });
-    // Toggle acciones dropdown menu
-    document.getElementById('accionesButton').addEventListener('click', function () {
-      document.getElementById('accionesMenu').classList.toggle('show');
-    });
+      // Close dropdown menu when clicking outside
+      window.addEventListener('click', function (e) {
+        if (document.getElementById('userMenuButton') && !document.getElementById('userMenuButton').contains(e.target)) {
+          const userMenu = document.getElementById('userMenu');
+          if (userMenu) userMenu.classList.remove('show');
+        }
+      });
 
-    // Close acciones dropdown menu when clicking outside
-    window.addEventListener('click', function (e) {
-      if (!document.getElementById('accionesButton').contains(e.target)) {
-        document.getElementById('accionesMenu').classList.remove('show');
-      }
+      // Toggle IA dropdown menu
+      document.getElementById('iaButton').addEventListener('click', function () {
+        document.getElementById('iaMenu').classList.toggle('show');
+      });
+
+      // Close IA dropdown menu when clicking outside
+      window.addEventListener('click', function (e) {
+        if (document.getElementById('iaButton') && !document.getElementById('iaButton').contains(e.target)) {
+          const iaMenu = document.getElementById('iaMenu');
+          if (iaMenu) iaMenu.classList.remove('show');
+        }
+      });
+
+      // Toggle acciones dropdown menu
+      document.getElementById('accionesButton').addEventListener('click', function () {
+        document.getElementById('accionesMenu').classList.toggle('show');
+      });
+
+      // Close acciones dropdown menu when clicking outside
+      window.addEventListener('click', function (e) {
+        if (document.getElementById('accionesButton') && !document.getElementById('accionesButton').contains(e.target)) {
+          const accionesMenu = document.getElementById('accionesMenu');
+          if (accionesMenu) accionesMenu.classList.remove('show');
+        }
+      });
+
+      // Mobile menu toggle
+      document.getElementById('mobile-menu-toggle').addEventListener('click', function () {
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenu.classList.add('show');
+        document.body.style.overflow = 'hidden'; // Prevent scrolling when menu is open
+        console.log("Menu toggle clicked");
+      });
+
+      // Mobile menu close
+      document.getElementById('mobile-menu-close').addEventListener('click', function () {
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenu.classList.remove('show');
+        document.body.style.overflow = '';
+      });
+
+      // Close mobile menu when clicking outside
+      document.getElementById('mobile-menu').addEventListener('click', function (e) {
+        if (e.target === this) {
+          this.classList.remove('show');
+          document.body.style.overflow = '';
+        }
+      });
     });
   </script>
 </body>

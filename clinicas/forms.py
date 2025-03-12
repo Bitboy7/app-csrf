@@ -170,41 +170,27 @@ class DoctorForm(forms.ModelForm):
         class Meta:
             model = Doctor
             fields = ['nombre', 'apellido', 'especialidad', 'telefono', 'correo', 'nacimiento']
-        
+
 class PacienteForm(forms.ModelForm):
-    nombre = forms.CharField(
-        required=True,
-        widget=forms.TextInput(attrs={'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline', 'placeholder': 'Nombre'})
-    )
-    paterno = forms.CharField(
-        required=False,
-        widget=forms.TextInput(attrs={'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline', 'placeholder': 'Apellido Paterno'})
-    )
-    materno = forms.CharField(
-        required=False,
-        widget=forms.TextInput(attrs={'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline', 'placeholder': 'Apellido Materno'})
-    )
-    telefono = forms.CharField(
-        required=False,
-        widget=forms.TextInput(attrs={'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline', 'placeholder': 'Teléfono'})
-    )
-    direccion = forms.CharField(
-        required=False,
-        widget=forms.TextInput(attrs={'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline', 'placeholder': 'Dirección'})
-    )
     fecha_nacimiento = forms.DateField(
         required=True,
-        widget=forms.DateInput(attrs={'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline', 'type': 'date'})
+        widget=forms.DateInput(attrs={
+            'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline',
+            'type': 'date'
+        })
     )
-    genero = forms.ChoiceField(
-        choices=(('M', 'Masculino'), ('F', 'Femenino')),
-        widget=forms.Select(attrs={'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'})
-    )
-
+    
     class Meta:
         model = Paciente
-        fields = ['nombre', 'paterno', 'materno', 'telefono', 'direccion', 'fecha_nacimiento', 'genero']
-
+        fields = ['nombre', 'paterno', 'materno', 'fecha_nacimiento', 'genero', 'telefono']
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'}),
+            'paterno': forms.TextInput(attrs={'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'}),
+            'materno': forms.TextInput(attrs={'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'}),
+            'genero': forms.Select(attrs={'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'}),
+            'telefono': forms.TextInput(attrs={'class': 'shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'}),
+        }
+        
 class HistorialMedicoForm(forms.ModelForm):
     consulta = forms.ModelChoiceField(
                 queryset=Consulta.objects.all(),
